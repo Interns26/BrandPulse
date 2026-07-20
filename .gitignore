@@ -1,0 +1,26 @@
+# Python compiled files
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+
+# Virtual environments and secrets
+.env
+venv/
+.venv/
+
+# IDE and editor settings
+.vscode/
+.idea/
+
+# OS system files
+.DS_Store
+
+# Local databases
+*.db
+*.sqlite3
+
+# Machine Learning models (tracked via DVC, ignored by Git)
+backend/models_storage/*
+!backend/models_storage/**/.gitkeep
+!backend/models_storage/**/*.dvc
