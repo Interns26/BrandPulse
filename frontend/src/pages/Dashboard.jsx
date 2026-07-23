@@ -35,6 +35,8 @@ const INTENT_CATEGORIES = [
   "Security Risks",
 ];
 
+const PRIORITY_CATEGORIES = ["High", "Medium", "Low"];
+
 const INITIAL_POSTS = [
   {
     id: 1,
@@ -45,6 +47,7 @@ const INITIAL_POSTS = [
       "Just encountered an API timeout issue when fetching data from the platform. Has anyone else experienced this? Really impacting production.",
     sentiment: "negative",
     intent: "Technical Issues",
+    priority: "High",
   },
   {
     id: 2,
@@ -55,6 +58,7 @@ const INITIAL_POSTS = [
       "The new dashboard update is absolutely fantastic! The UX improvements are really noticeable. Great work by the team!",
     sentiment: "positive",
     intent: "Inquiry & Feedback",
+    priority: "Low",
   },
   {
     id: 3,
@@ -65,6 +69,7 @@ const INITIAL_POSTS = [
       "Security advisory: Found potential vulnerability in version 2.1. Recommend immediate patching before deploying to production.",
     sentiment: "neutral",
     intent: "Security Risks",
+    priority: "High",
   },
   {
     id: 4,
@@ -75,6 +80,7 @@ const INITIAL_POSTS = [
       "Can anyone clarify the pricing tiers? The documentation seems outdated and I'm confused about which plan fits our needs.",
     sentiment: "neutral",
     intent: "Billing & Payments",
+    priority: "Medium",
   },
   {
     id: 5,
@@ -85,6 +91,7 @@ const INITIAL_POSTS = [
       "Switched to your platform last month and the performance improvements are remarkable. Highly recommend to anyone on the fence.",
     sentiment: "positive",
     intent: "Inquiry & Feedback",
+    priority: "Low",
   },
   {
     id: 6,
@@ -95,6 +102,7 @@ const INITIAL_POSTS = [
       "The API documentation could be much better. Spent 3 hours trying to integrate a simple endpoint. Very frustrating experience.",
     sentiment: "negative",
     intent: "Technical Issues",
+    priority: "Medium",
   },
   {
     id: 7,
@@ -105,6 +113,7 @@ const INITIAL_POSTS = [
       "Interesting implementation of OAuth 2.0 in their latest release. Seems well thought out and follows industry standards.",
     sentiment: "positive",
     intent: "Inquiry & Feedback",
+    priority: "Low",
   },
   {
     id: 8,
@@ -115,6 +124,7 @@ const INITIAL_POSTS = [
       "Just noticed the billing page shows incorrect charges for last month. This needs to be reviewed urgently.",
     sentiment: "negative",
     intent: "Billing & Payments",
+    priority: "High",
   },
   {
     id: 9,
@@ -125,6 +135,7 @@ const INITIAL_POSTS = [
       "Love that they support open standards. Makes integration with our existing toolchain seamless.",
     sentiment: "positive",
     intent: "Inquiry & Feedback",
+    priority: "Low",
   },
   {
     id: 10,
@@ -135,6 +146,7 @@ const INITIAL_POSTS = [
       "Found a critical security issue in the authentication flow. Reported through their responsible disclosure program.",
     sentiment: "neutral",
     intent: "Security Risks",
+    priority: "High",
   },
 ];
 
@@ -157,6 +169,7 @@ export default function Dashboard() {
     subreddit: "all",
     sentiment: "all",
     intent: "all",
+    priority: "all",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -192,7 +205,9 @@ export default function Dashboard() {
         filters.sentiment === "all" || post.sentiment === filters.sentiment;
       const intentMatch =
         filters.intent === "all" || post.intent === filters.intent;
-      return subredditMatch && sentimentMatch && intentMatch;
+      const priorityMatch =
+        filters.priority === "all" || post.priority === filters.priority;
+      return subredditMatch && sentimentMatch && intentMatch && priorityMatch;
     });
   }, [posts, filters]);
 
@@ -244,6 +259,7 @@ export default function Dashboard() {
         content: `Sample post from r/${sourceKey}. Dynamic feed addition active.`,
         sentiment: "positive",
         intent: "Inquiry & Feedback",
+        priority: "Low",
       },
     ];
 
@@ -272,7 +288,7 @@ export default function Dashboard() {
           ],
           borderWidth: 2,
           borderColor: cardColor,
-          borderRadius: 5
+          borderRadius: 5,
         },
       ],
     };
@@ -333,17 +349,17 @@ export default function Dashboard() {
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Posts */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
+        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
             Total Posts Analyzed
           </div>
           <div className="text-3xl font-bold tracking-tight text-[var(--foreground)]">
             {stats.total.toLocaleString()}
           </div>
-          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-[var(--positive-bg)] text-[var(--positive-text)] w-fit">
+          {/* <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-[var(--positive-bg)] text-[var(--positive-text)] w-fit">
             <Icon icon="lucide:arrow-up" className="w-3 h-3" />
             <span>12.5% vs last week</span>
-          </div>
+          </div> */}
         </div>
 
         {/* Positive Sentiment */}
@@ -444,7 +460,7 @@ export default function Dashboard() {
       </div>
 
       {/* Sentiment Timeline Chart */}
-      <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
+      <div className="p-6 rounded-xl border border-(--border) bg-(--card) shadow-xs space-y-4">
         <h3 className="text-base font-bold text-[var(--foreground)]">
           Sentiment Timeline (Last 7 Days)
         </h3>
@@ -495,7 +511,7 @@ export default function Dashboard() {
         </div>
 
         {/* Filters Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-xs font-semibold text-[var(--muted-foreground)] mb-2">
               Filter by Subreddit
@@ -546,6 +562,24 @@ export default function Dashboard() {
               ))}
             </select>
           </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--muted-foreground)] mb-2">
+              Filter by Priority
+            </label>
+            <select
+              value={filters.priority}
+              onChange={(e) => handleFilterChange("priority", e.target.value)}
+              className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--input-background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)]"
+            >
+              <option value="all">All Priorities</option>
+              {PRIORITY_CATEGORIES.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Posts Table */}
@@ -559,6 +593,7 @@ export default function Dashboard() {
                 <th className="p-3.5">Content</th>
                 <th className="p-3.5">Sentiment</th>
                 <th className="p-3.5">Intent</th>
+                <th className="p-3.5">Priority</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)] text-sm">
@@ -594,8 +629,22 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="p-3.5">
-                      <span className="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--neutral-bg)] text-[var(--neutral-text)]">
+                      <span className="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-(--neutral-bg) text-(--neutral-text)">
                         {post.intent}
+                      </span>
+                    </td>
+
+                    <td className="p-3.5">
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-md text-xs font-semibold ${
+                          post.priority === "High"
+                            ? "bg-(--negative-bg) text-(--negative-text)"
+                            : post.priority === "Medium"
+                              ? "bg-(--medium-bg,#fef3c7) text-[var(--medium-text,#b45309)]"
+                              : "bg-[var(--positive-bg)] text-[var(--positive-text)]"
+                        }`}
+                      >
+                        {post.priority}
                       </span>
                     </td>
                   </tr>
@@ -603,7 +652,7 @@ export default function Dashboard() {
               ) : (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="p-6 text-center text-[var(--muted-foreground)]"
                   >
                     No posts matched the current filters.
