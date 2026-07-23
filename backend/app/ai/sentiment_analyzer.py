@@ -14,7 +14,7 @@ sentimentPipeline = pipeline(
 
 def analyzeSentiment(text: str) -> dict:
 
-    output = sentimentPipeline(text)[0]
+    output = sentimentPipeline(text, truncation=True, max_length=512)[0]
 
     return {"label": output["label"], "confidence": round((output["score"] * 100), 2)}
 

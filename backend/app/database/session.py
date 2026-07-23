@@ -5,19 +5,24 @@ from ..config import get_settings
 
 settings = get_settings()
 
-# pool_pre_ping=True protects your app from database connection drops/restarts in Docker
 engine = create_engine(
-    settings.database_url, 
+    settings.database_url,
     pool_pre_ping=True
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Modern SQLAlchemy 2.0 style declarative base class
+
 class Base(DeclarativeBase):
     pass
 
-# FastAPI dependency for managing database session lifecycles per request
+
+def init_db():
+    """Create all tables and indexes if they don't exist."""
+    from . import models  # noqa: F401
+    Base.metadata.create_all(bind=engine)
+
+
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
