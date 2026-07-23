@@ -26,6 +26,8 @@
     --negative-text: #be123c;
     --neutral-bg: #f1f5f9;
     --neutral-text: #64748b;
+
+    --chart-grid: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
@@ -51,6 +53,8 @@
     --negative-text: #fb7185;
     --neutral-bg: rgba(100, 116, 139, 0.2);
     --neutral-text: #cbd5e1;
+
+    --chart-grid: rgba(255, 255, 255, 0.05);
 }
 
 @theme {

@@ -18,8 +18,8 @@ function Navbar() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 h-14 p-2 pr-10 bg-card flex items-center justify-between">
-        <div className="flex items-center justify-center gap-2 text-accent">
+      <div className="fixed top-0 left-0 right-0 z-999 h-14 p-2 pr-10 bg-card border-b border-border flex items-center justify-between">
+        <div className="pl-2 flex items-center justify-center gap-2 text-accent">
           <Icon icon="fa-solid:chart-line" className="h-7 w-7  rounded-sm" />
           <div className="font-bold text-2xl">BrandPulse</div>
         </div>
