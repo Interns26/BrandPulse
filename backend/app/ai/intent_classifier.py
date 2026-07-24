@@ -1,6 +1,9 @@
+
+from pathlib import Path
 from transformers import pipeline
 
-MODEL = "facebook/bart-large-mnli"
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+LOCAL_MODEL_PATH = str(BASE_DIR / "models_storage" / "intent_model")
 
 FIRST_LEVEL = [
     "reporting a technical problem or software error",
@@ -43,7 +46,7 @@ DASHBOARD_LABEL_MAP = {
 }
 
 classifierPipeline = pipeline(
-    task="zero-shot-classification", model=MODEL, use_safetensors=True
+    task="zero-shot-classification", model=LOCAL_MODEL_PATH, use_safetensors=LOCAL_MODEL_PATH
 )
 
 

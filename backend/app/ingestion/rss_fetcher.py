@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import feedparser
 import httpx
 from sqlalchemy.orm import Session
-
+import time
 from app.config import get_settings
 from app.database.models import IngestionLog, Post, RssSource
 from app.ingestion.cleaner import clean_text, prepare_text_for_ai
@@ -144,6 +144,7 @@ def run_ingestion_pipeline(db: Session) -> list[IngestionLog]:
                 f"process_rss_feed() finished. "
                 f"Fetched={fetched_count}, New={new_count}"
             )
+            time.sleep(2)
 
         except Exception as e:
             logger.exception("Error inside process_rss_feed()")

@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     
     # Ingestion Configuration
     rss_fetch_interval_minutes: int = 30
-    rss_user_agent: str = "BrandPulse/1.0"
+    rss_user_agent: str = "desktop:com.brandpulse.app:v1.0.0 (by /u/brandpulse_dev)"
     
     # Scalable: Pydantic automatically parses JSON strings from env into a Dict
     default_rss_urls: Dict[str, str] = {}

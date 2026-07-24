@@ -37,121 +37,9 @@ const INTENT_CATEGORIES = [
 
 const PRIORITY_CATEGORIES = ["High", "Medium", "Low"];
 
-const INITIAL_POSTS = [
-  {
-    id: 1,
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    source: "reactjs",
-    author: "CodeMaster92",
-    content:
-      "Just encountered an API timeout issue when fetching data from the platform. Has anyone else experienced this? Really impacting production.",
-    sentiment: "negative",
-    intent: "Technical Issues",
-    priority: "High",
-  },
-  {
-    id: 2,
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-    source: "saas",
-    author: "StartupGuy",
-    content:
-      "The new dashboard update is absolutely fantastic! The UX improvements are really noticeable. Great work by the team!",
-    sentiment: "positive",
-    intent: "Inquiry & Feedback",
-    priority: "Low",
-  },
-  {
-    id: 3,
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-    source: "technology",
-    author: "SecurityNerd",
-    content:
-      "Security advisory: Found potential vulnerability in version 2.1. Recommend immediate patching before deploying to production.",
-    sentiment: "neutral",
-    intent: "Security Risks",
-    priority: "High",
-  },
-  {
-    id: 4,
-    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
-    source: "webdev",
-    author: "FullStackDev",
-    content:
-      "Can anyone clarify the pricing tiers? The documentation seems outdated and I'm confused about which plan fits our needs.",
-    sentiment: "neutral",
-    intent: "Billing & Payments",
-    priority: "Medium",
-  },
-  {
-    id: 5,
-    timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000),
-    source: "reactjs",
-    author: "ProDeveloper",
-    content:
-      "Switched to your platform last month and the performance improvements are remarkable. Highly recommend to anyone on the fence.",
-    sentiment: "positive",
-    intent: "Inquiry & Feedback",
-    priority: "Low",
-  },
-  {
-    id: 6,
-    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
-    source: "saas",
-    author: "DataAnalyst",
-    content:
-      "The API documentation could be much better. Spent 3 hours trying to integrate a simple endpoint. Very frustrating experience.",
-    sentiment: "negative",
-    intent: "Technical Issues",
-    priority: "Medium",
-  },
-  {
-    id: 7,
-    timestamp: new Date(Date.now() - 14 * 60 * 60 * 1000),
-    source: "technology",
-    author: "TechWriter",
-    content:
-      "Interesting implementation of OAuth 2.0 in their latest release. Seems well thought out and follows industry standards.",
-    sentiment: "positive",
-    intent: "Inquiry & Feedback",
-    priority: "Low",
-  },
-  {
-    id: 8,
-    timestamp: new Date(Date.now() - 16 * 60 * 60 * 1000),
-    source: "webdev",
-    author: "NewUser",
-    content:
-      "Just noticed the billing page shows incorrect charges for last month. This needs to be reviewed urgently.",
-    sentiment: "negative",
-    intent: "Billing & Payments",
-    priority: "High",
-  },
-  {
-    id: 9,
-    timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000),
-    source: "reactjs",
-    author: "OpenSourceFan",
-    content:
-      "Love that they support open standards. Makes integration with our existing toolchain seamless.",
-    sentiment: "positive",
-    intent: "Inquiry & Feedback",
-    priority: "Low",
-  },
-  {
-    id: 10,
-    timestamp: new Date(Date.now() - 20 * 60 * 60 * 1000),
-    source: "saas",
-    author: "QAEngineer",
-    content:
-      "Found a critical security issue in the authentication flow. Reported through their responsible disclosure program.",
-    sentiment: "neutral",
-    intent: "Security Risks",
-    priority: "High",
-  },
-];
-
-function getRelativeTime(date) {
-  const diffMs = new Date() - new Date(date);
+function getRelativeTime(dateStr) {
+  if (!dateStr) return "N/A";
+  const diffMs = new Date() - new Date(dateStr);
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
@@ -160,11 +48,37 @@ function getRelativeTime(date) {
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
-  return new Date(date).toLocaleDateString();
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function formatSourceName(sourceName) {
+  if (!sourceName) return "r/unknown";
+  const cleaned = sourceName.replace(/^(reddit_|r_)/i, "");
+  return `r/${cleaned}`;
 }
 
 export default function Dashboard() {
-  const [posts, setPosts] = useState(INITIAL_POSTS);
+  // Data States
+  const [sources, setSources] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [stats, setStats] = useState({
+    total: 0,
+    positive: 0,
+    negative: 0,
+    neutral: 0,
+    positivePct: 0,
+    negativePct: 0,
+    neutralPct: 0,
+  });
+  const [intentCounts, setIntentCounts] = useState({});
+  const [timelineData, setTimelineData] = useState({
+    labels: [],
+    positive: [],
+    negative: [],
+    neutral: [],
+  });
+
+  // UI & Filter States
   const [filters, setFilters] = useState({
     subreddit: "all",
     sentiment: "all",
@@ -172,17 +86,19 @@ export default function Dashboard() {
     priority: "all",
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 5;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newSubreddit, setNewSubreddit] = useState("");
 
-  // 1. React State to track the active HTML theme class
+  // React State for active HTML theme class
   const [theme, setTheme] = useState(() =>
     document.documentElement.classList.contains("dark") ? "dark" : "light",
   );
 
-  // 2. Listen for class changes on <html> (document.documentElement)
+  // Listen for dark/light class changes on <html>
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const isDark = document.documentElement.classList.contains("dark");
@@ -197,81 +113,153 @@ export default function Dashboard() {
     return () => observer.disconnect();
   }, []);
 
-  const filteredPosts = useMemo(() => {
-    return posts.filter((post) => {
-      const subredditMatch =
-        filters.subreddit === "all" || post.source === filters.subreddit;
-      const sentimentMatch =
-        filters.sentiment === "all" || post.sentiment === filters.sentiment;
-      const intentMatch =
-        filters.intent === "all" || post.intent === filters.intent;
-      const priorityMatch =
-        filters.priority === "all" || post.priority === filters.priority;
-      return subredditMatch && sentimentMatch && intentMatch && priorityMatch;
-    });
-  }, [posts, filters]);
-
-  const stats = useMemo(() => {
-    const total = filteredPosts.length;
-    const positive = filteredPosts.filter(
-      (p) => p.sentiment === "positive",
-    ).length;
-    const negative = filteredPosts.filter(
-      (p) => p.sentiment === "negative",
-    ).length;
-    const neutral = filteredPosts.filter(
-      (p) => p.sentiment === "neutral",
-    ).length;
-    const baseTotal = total || 1;
-
-    return {
-      total,
-      positive,
-      negative,
-      neutral,
-      positivePct: Math.round((positive / baseTotal) * 100),
-      negativePct: Math.round((negative / baseTotal) * 100),
-      neutralPct: Math.round((neutral / baseTotal) * 100),
+  // 1. Fetch Active Sources for Subreddit Dropdown (/api/sources)
+  useEffect(() => {
+    const fetchSources = async () => {
+      try {
+        const res = await fetch("/api/sources");
+        if (!res.ok) throw new Error("Failed to fetch sources");
+        const data = await res.json();
+        setSources(data.sources || []);
+      } catch (err) {
+        console.error("Error loading sources:", err);
+      }
     };
-  }, [filteredPosts]);
+    fetchSources();
+  }, []);
 
-  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage) || 1;
-  const paginatedPosts = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredPosts.slice(start, start + itemsPerPage);
-  }, [filteredPosts, currentPage]);
+  // 2. Fetch KPI Statistics (/api/stats)
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (filters.subreddit !== "all")
+          params.append("source", filters.subreddit);
+
+        const res = await fetch(`/api/stats?${params.toString()}`);
+        if (!res.ok) throw new Error("Failed to fetch stats");
+        const data = await res.json();
+
+        setStats({
+          total: data.total ?? 0,
+          positive: data.positive ?? 0,
+          negative: data.negative ?? 0,
+          neutral: data.neutral ?? 0,
+          positivePct: data.positivePct ?? 0,
+          negativePct: data.negativePct ?? 0,
+          neutralPct: data.neutralPct ?? 0,
+        });
+      } catch (err) {
+        console.error("Error loading stats:", err);
+      }
+    };
+    fetchStats();
+  }, [filters.subreddit]);
+
+  // 3. Fetch Intent Breakdown Chart Data (/api/stats/intents)
+  useEffect(() => {
+    const fetchIntents = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (filters.subreddit !== "all")
+          params.append("source", filters.subreddit);
+        if (filters.sentiment !== "all")
+          params.append("sentiment", filters.sentiment);
+
+        const res = await fetch(`/api/stats/intents?${params.toString()}`);
+        if (!res.ok) throw new Error("Failed to fetch intents");
+        const data = await res.json();
+        setIntentCounts(data.breakdown || {});
+      } catch (err) {
+        console.error("Error loading intent breakdown:", err);
+      }
+    };
+    fetchIntents();
+  }, [filters.subreddit, filters.sentiment]);
+
+  // 4. Fetch Timeline Trend Data (/api/stats/timeline)
+  useEffect(() => {
+    const fetchTimeline = async () => {
+      try {
+        const params = new URLSearchParams({ days: "7" });
+        if (filters.subreddit !== "all")
+          params.append("source", filters.subreddit);
+
+        const res = await fetch(`/api/stats/timeline?${params.toString()}`);
+        if (!res.ok) throw new Error("Failed to fetch timeline");
+        const data = await res.json();
+
+        if (data.days && Array.isArray(data.days)) {
+          const labels = data.days.map((item) => {
+            const d = new Date(item.date);
+            return isNaN(d)
+              ? item.date
+              : d.toLocaleDateString("en-US", { weekday: "short" });
+          });
+          const positive = data.days.map((item) => item.positive ?? 0);
+          const negative = data.days.map((item) => item.negative ?? 0);
+          const neutral = data.days.map((item) => item.neutral ?? 0);
+
+          setTimelineData({ labels, positive, negative, neutral });
+        }
+      } catch (err) {
+        console.error("Error loading timeline:", err);
+      }
+    };
+    fetchTimeline();
+  }, [filters.subreddit]);
+
+  // 5. Fetch Paginated Posts Table Data (/api/posts)
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: itemsPerPage.toString(),
+        });
+
+        if (filters.subreddit !== "all")
+          params.append("source", filters.subreddit);
+        if (filters.sentiment !== "all")
+          params.append("sentiment", filters.sentiment);
+        if (filters.priority !== "all")
+          params.append("priority", filters.priority);
+
+        const res = await fetch(`/api/posts?${params.toString()}`);
+        if (!res.ok) throw new Error("Failed to fetch posts");
+        const data = await res.json();
+
+        setPosts(data.items || []);
+        setTotalPages(Math.ceil((data.total || 0) / itemsPerPage) || 1);
+      } catch (err) {
+        console.error("Error loading posts:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [currentPage, filters]);
 
   const handleFilterChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
     setCurrentPage(1);
   };
 
-  const handleAddSource = () => {
+  const handleAddSource = async () => {
     if (!newSubreddit.trim()) return;
     const sourceKey = newSubreddit.trim().toLowerCase().replace(/^r\//, "");
 
-    const newPosts = [
-      {
-        id: Date.now(),
-        timestamp: new Date(),
-        source: sourceKey,
-        author: `User${Math.floor(Math.random() * 9000 + 1000)}`,
-        content: `Sample post from r/${sourceKey}. Dynamic feed addition active.`,
-        sentiment: "positive",
-        intent: "Inquiry & Feedback",
-        priority: "Low",
-      },
-    ];
-
-    setPosts((prev) => [...prev, ...newPosts]);
+    setSources((prev) => [...new Set([...prev, sourceKey])]);
     setNewSubreddit("");
     setIsModalOpen(false);
   };
 
-  // Dynamic Theme Palette from CSS Variables
   const getVar = (name) =>
     getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
+  // Sentiment Doughnut Chart Config
   const sentimentChartData = useMemo(() => {
     const cardColor =
       getVar("--card") || (theme === "dark" ? "#131c2e" : "#ffffff");
@@ -294,72 +282,75 @@ export default function Dashboard() {
     };
   }, [stats, theme]);
 
-  const intentCounts = useMemo(() => {
-    const counts = {};
-    INTENT_CATEGORIES.forEach((cat) => {
-      counts[cat] = filteredPosts.filter((p) => p.intent === cat).length;
-    });
-    return counts;
-  }, [filteredPosts]);
+  // Intent Bar Chart Config
+  const intentChartData = useMemo(() => {
+    const labels =
+      Object.keys(intentCounts).length > 0
+        ? Object.keys(intentCounts)
+        : INTENT_CATEGORIES;
+    const dataValues =
+      Object.keys(intentCounts).length > 0
+        ? Object.values(intentCounts)
+        : [0, 0, 0, 0];
 
-  const intentChartData = {
-    labels: Object.keys(intentCounts),
-    datasets: [
-      {
-        label: "Post Count",
-        data: Object.values(intentCounts),
-        backgroundColor: getVar("--accent") || "#10b981",
-        borderRadius: 6,
-      },
-    ],
-  };
+    return {
+      labels,
+      datasets: [
+        {
+          label: "Post Count",
+          data: dataValues,
+          backgroundColor: getVar("--accent") || "#10b981",
+          borderRadius: 6,
+        },
+      ],
+    };
+  }, [intentCounts, theme]);
 
-  const timelineChartData = {
-    labels: ["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"],
-    datasets: [
-      {
-        label: "Positive",
-        data: [220, 160, 248, 206, 222, 237, 226],
-        borderColor: getVar("--accent") || "#10b981",
-        backgroundColor: "rgba(16, 185, 129, 0.12)",
-        tension: 0.4,
-        fill: true,
-      },
-      {
-        label: "Negative",
-        data: [134, 90, 153, 148, 112, 157, 81],
-        borderColor: getVar("--negative-accent") || "#f43f5e",
-        backgroundColor: "rgba(244, 63, 94, 0.12)",
-        tension: 0.4,
-        fill: true,
-      },
-      {
-        label: "Neutral",
-        data: [177, 188, 112, 125, 157, 114, 148],
-        borderColor: getVar("--muted-foreground") || "#64748b",
-        backgroundColor: "rgba(100, 116, 139, 0.12)",
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
+  // Timeline Line Chart Config
+  const timelineChartData = useMemo(() => {
+    return {
+      labels: timelineData.labels.length > 0 ? timelineData.labels : ["Mon"],
+      datasets: [
+        {
+          label: "Positive",
+          data: timelineData.positive.length > 0 ? timelineData.positive : [0],
+          borderColor: getVar("--accent") || "#10b981",
+          backgroundColor: "rgba(16, 185, 129, 0.12)",
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: "Negative",
+          data: timelineData.negative.length > 0 ? timelineData.negative : [0],
+          borderColor: getVar("--negative-accent") || "#f43f5e",
+          backgroundColor: "rgba(244, 63, 94, 0.12)",
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: "Neutral",
+          data: timelineData.neutral.length > 0 ? timelineData.neutral : [0],
+          borderColor: getVar("--muted-foreground") || "#64748b",
+          backgroundColor: "rgba(100, 116, 139, 0.12)",
+          tension: 0.4,
+          fill: true,
+        },
+      ],
+    };
+  }, [timelineData, theme]);
 
   return (
     <div className="p-8 space-y-8 bg-[var(--background)] min-h-screen text-[var(--foreground)] transition-colors duration-200">
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Posts */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col space-y-3">
+        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
             Total Posts Analyzed
           </div>
           <div className="text-3xl font-bold tracking-tight text-[var(--foreground)]">
             {stats.total.toLocaleString()}
           </div>
-          {/* <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-[var(--positive-bg)] text-[var(--positive-text)] w-fit">
-            <Icon icon="lucide:arrow-up" className="w-3 h-3" />
-            <span>12.5% vs last week</span>
-          </div> */}
         </div>
 
         {/* Positive Sentiment */}
@@ -405,8 +396,8 @@ export default function Dashboard() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sentiment Distribution */}
-        <div className="p-6 rounded-xl border border-border bg-card shadow-xs space-y-4">
-          <h3 className="text-base font-bold text-foreground">
+        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
+          <h3 className="text-base font-bold text-[var(--foreground)]">
             Sentiment Distribution
           </h3>
           <div className="h-72 relative">
@@ -460,7 +451,7 @@ export default function Dashboard() {
       </div>
 
       {/* Sentiment Timeline Chart */}
-      <div className="p-6 rounded-xl border border-(--border) bg-(--card) shadow-xs space-y-4">
+      <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
         <h3 className="text-base font-bold text-[var(--foreground)]">
           Sentiment Timeline (Last 7 Days)
         </h3>
@@ -512,6 +503,7 @@ export default function Dashboard() {
 
         {/* Filters Row */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Subreddit / Source Filter */}
           <div>
             <label className="block text-xs font-semibold text-[var(--muted-foreground)] mb-2">
               Filter by Subreddit
@@ -522,13 +514,15 @@ export default function Dashboard() {
               className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--input-background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)]"
             >
               <option value="all">All Sources</option>
-              <option value="reactjs">r/reactjs</option>
-              <option value="saas">r/saas</option>
-              <option value="technology">r/technology</option>
-              <option value="webdev">r/webdev</option>
+              {sources.map((src) => (
+                <option key={src} value={src}>
+                  {formatSourceName(src)}
+                </option>
+              ))}
             </select>
           </div>
 
+          {/* Sentiment Filter */}
           <div>
             <label className="block text-xs font-semibold text-[var(--muted-foreground)] mb-2">
               Filter by Sentiment
@@ -545,6 +539,7 @@ export default function Dashboard() {
             </select>
           </div>
 
+          {/* Intent Filter */}
           <div>
             <label className="block text-xs font-semibold text-[var(--muted-foreground)] mb-2">
               Filter by Intent
@@ -563,6 +558,7 @@ export default function Dashboard() {
             </select>
           </div>
 
+          {/* Priority Filter */}
           <div>
             <label className="block text-xs font-semibold text-[var(--muted-foreground)] mb-2">
               Filter by Priority
@@ -597,23 +593,34 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)] text-sm">
-              {paginatedPosts.length > 0 ? (
-                paginatedPosts.map((post) => (
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="p-6 text-center text-[var(--muted-foreground)]"
+                  >
+                    Loading posts...
+                  </td>
+                </tr>
+              ) : posts.length > 0 ? (
+                posts.map((post) => (
                   <tr
                     key={post.id}
                     className="hover:bg-[var(--muted)]/50 transition-colors"
                   >
                     <td className="p-3.5 text-[var(--muted-foreground)]">
-                      {getRelativeTime(post.timestamp)}
+                      {getRelativeTime(post.fetched_at)}
                     </td>
                     <td className="p-3.5 font-semibold text-[var(--foreground)]">
-                      r/{post.source}
+                      {formatSourceName(post.source_name)}
                     </td>
                     <td className="p-3.5 text-[var(--foreground)]">
-                      {post.author}
+                      {post.author || "Anonymous"}
                     </td>
                     <td className="p-3.5 text-[var(--muted-foreground)] max-w-xs truncate">
-                      {post.content}
+                      {post.content && post.content.trim() !== ""
+                        ? post.content
+                        : post.title}
                     </td>
                     <td className="p-3.5">
                       <span
@@ -625,26 +632,25 @@ export default function Dashboard() {
                               : "bg-[var(--neutral-bg)] text-[var(--neutral-text)]"
                         }`}
                       >
-                        {post.sentiment}
+                        {post.sentiment || "neutral"}
                       </span>
                     </td>
                     <td className="p-3.5">
-                      <span className="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-(--neutral-bg) text-(--neutral-text)">
-                        {post.intent}
+                      <span className="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--neutral-bg)] text-[var(--neutral-text)]">
+                        {post.intent_category || "General"}
                       </span>
                     </td>
-
                     <td className="p-3.5">
                       <span
                         className={`inline-block px-2.5 py-1 rounded-md text-xs font-semibold ${
                           post.priority === "High"
-                            ? "bg-(--negative-bg) text-(--negative-text)"
+                            ? "bg-[var(--negative-bg)] text-[var(--negative-text)]"
                             : post.priority === "Medium"
-                              ? "bg-(--medium-bg,#fef3c7) text-[var(--medium-text,#b45309)]"
+                              ? "bg-[var(--medium-bg,#fef3c7)] text-[var(--medium-text,#b45309)]"
                               : "bg-[var(--positive-bg)] text-[var(--positive-text)]"
                         }`}
                       >
-                        {post.priority}
+                        {post.priority || "Low"}
                       </span>
                     </td>
                   </tr>
