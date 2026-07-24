@@ -108,25 +108,50 @@ def process_rss_feed(source_name: str, url: str, db: Session) -> tuple[int, int]
 
 def run_ingestion_pipeline(db: Session) -> list[IngestionLog]:
     """Iterates across all configured RSS sources."""
+
+    logger.info("=== Entered run_ingestion_pipeline ===")
+
     logs = []
+
+    logger.info("Loading RSS sources...")
     sources = settings.default_rss_urls
 
+    logger.info("Checking database for active RSS sources...")
     db_sources = db.query(RssSource).filter(RssSource.is_active == True).all()
+
+    logger.info(f"Found {len(db_sources)} active RSS sources in database.")
+
     if db_sources:
+        logger.info("Using RSS sources from database.")
         sources = {source.name: source.url for source in db_sources}
+    else:
+        logger.info("Using default RSS sources from config.")
+
+    logger.info(f"Total sources to process: {len(sources)}")
 
     for source_name, url in sources.items():
+        logger.info(f"Processing source: {source_name}")
+
         started_at = datetime.now(timezone.utc)
         error_msg = None
         fetched_count = 0
         new_count = 0
 
         try:
+            logger.info("Calling process_rss_feed()...")
             fetched_count, new_count = process_rss_feed(source_name, url, db)
+            logger.info(
+                f"process_rss_feed() finished. "
+                f"Fetched={fetched_count}, New={new_count}"
+            )
+
         except Exception as e:
+            logger.exception("Error inside process_rss_feed()")
             error_msg = str(e)
 
         completed_at = datetime.now(timezone.utc)
+
+        logger.info("Creating ingestion log entry...")
 
         log_entry = IngestionLog(
             source=source_name,
@@ -136,8 +161,14 @@ def run_ingestion_pipeline(db: Session) -> list[IngestionLog]:
             started_at=started_at,
             completed_at=completed_at,
         )
+
         db.add(log_entry)
         db.commit()
+
+        logger.info(f"Saved ingestion log for {source_name}")
+
         logs.append(log_entry)
+
+    logger.info("=== Finished run_ingestion_pipeline ===")
 
     return logs

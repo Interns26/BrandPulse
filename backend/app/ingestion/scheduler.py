@@ -24,10 +24,14 @@ def scheduled_ingestion_job():
         db.close()
 
 
+
 def start_scheduler():
     """Starts the background scheduler."""
     interval_minutes = settings.rss_fetch_interval_minutes
-    
+
+     # Run once immediately
+    scheduled_ingestion_job()
+
     scheduler.add_job(
         scheduled_ingestion_job,
         trigger="interval",

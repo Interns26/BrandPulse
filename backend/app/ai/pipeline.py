@@ -84,6 +84,8 @@ def process_ingested_packet(packet: dict, db: Session = None) -> bool:
                 content_hash=packet["content_hash"],
                 url=packet["url"],
                 fetched_at=fetched_at_dt,
+                priority=packet["priority"],
+                ai_input_text=ai_input,
             )
 
             # Create related AI result objects
@@ -93,6 +95,7 @@ def process_ingested_packet(packet: dict, db: Session = None) -> bool:
             )
             post.intent_result = IntentResult(
                 intent_category=packet["intent_category"],
+                intent_description=packet["intent_description"],
                 confidence=packet["intent_confidence"],
             )
 
