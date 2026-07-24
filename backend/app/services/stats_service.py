@@ -1,30 +1,29 @@
 from collections import defaultdict
-from datetime import date
-
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.database.models import Post
+from app.database.models import Post, SentimentResult, IntentResult
 
-def get_stats(db: Session):
 
-    total = db.scalar(
-        select(func.count()).select_from(Post)
-    ) or 0
+def get_stats(db: Session, source: str | None = None):
+    # Single efficient query using conditional aggregation
+    stmt = (
+        select(
+            func.count(Post.id).label("total"),
+            func.count().filter(SentimentResult.sentiment == "positive").label("positive"),
+            func.count().filter(SentimentResult.sentiment == "negative").label("negative"),
+            func.count().filter(SentimentResult.sentiment == "neutral").label("neutral"),
+        )
+        .outerjoin(Post.sentiment_result)
+    )
 
-    positive = db.scalar(
-        select(func.count()).where(Post.sentiment == "positive")
-    ) or 0
+    if source:
+        stmt = stmt.where(Post.source_name == source)
 
-    negative = db.scalar(
-        select(func.count()).where(Post.sentiment == "negative")
-    ) or 0
+    row = db.execute(stmt).one()
+    total, positive, negative, neutral = row.total, row.positive, row.negative, row.neutral
 
-    neutral = db.scalar(
-        select(func.count()).where(Post.sentiment == "neutral")
-    ) or 0
-
-    if total == 0:
+    if not total:
         return {
             "total": 0,
             "positive": 0,
@@ -46,36 +45,50 @@ def get_stats(db: Session):
     }
 
 
-def get_intent_breakdown(db: Session):
+def get_intent_breakdown(db: Session, source: str | None = None, sentiment: str | None = None):
+    stmt = (
+        select(
+            IntentResult.intent_category,
+            func.count(Post.id)
+        )
+        .join(Post.intent_result)
+    )
+
+    if sentiment:
+        stmt = stmt.join(Post.sentiment_result).where(SentimentResult.sentiment == sentiment)
+
+    if source:
+        stmt = stmt.where(Post.source_name == source)
 
     rows = db.execute(
-        select(
-            Post.intent_category,
-            func.count()
-        )
-        .group_by(Post.intent_category)
-        .order_by(func.count().desc())
+        stmt.group_by(IntentResult.intent_category)
+        .order_by(func.count(Post.id).desc())
     ).all()
 
     return {
         "breakdown": {
-            category: count
-            for category, count in rows
+            category: count for category, count in rows if category
         }
     }
 
 
-def get_timeline(db: Session):
+def get_timeline(db: Session, source: str | None = None, days: int = 7):
+    stmt = (
+        select(
+            func.date(Post.fetched_at).label("fetched_date"),
+            SentimentResult.sentiment,
+            func.count(Post.id)
+        )
+        .join(Post.sentiment_result)
+    )
+
+    if source:
+        stmt = stmt.where(Post.source_name == source)
 
     rows = db.execute(
-        select(
+        stmt.group_by(
             func.date(Post.fetched_at),
-            Post.sentiment,
-            func.count()
-        )
-        .group_by(
-            func.date(Post.fetched_at),
-            Post.sentiment
+            SentimentResult.sentiment
         )
         .order_by(func.date(Post.fetched_at))
     ).all()
@@ -88,17 +101,16 @@ def get_timeline(db: Session):
         }
     )
 
-    for day, sentiment, count in rows:
-        timeline[day][sentiment.lower()] = count
+    for day, sentiment_val, count in rows:
+        if day and sentiment_val:
+            timeline[str(day)][sentiment_val.lower()] = count
 
     return {
         "days": [
             {
-                "date": str(day),
+                "date": date_str,
                 **values,
             }
-            for day, values in timeline.items()
+            for date_str, values in timeline.items()
         ]
     }
-
-

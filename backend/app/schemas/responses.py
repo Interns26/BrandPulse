@@ -17,14 +17,14 @@ class PostRead(BaseModel):
 
     fetched_at: datetime
 
-    sentiment: str
-    sentiment_confidence: float
+    sentiment: Optional[str] = None
+    sentiment_confidence: Optional[float] = None
 
-    intent_category: str
-    intent_description: str
-    intent_confidence: float
+    intent_category: Optional[str] = None
+    intent_description: Optional[str] = None
+    intent_confidence: Optional[float] = None
 
-    priority: str
+    priority: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
