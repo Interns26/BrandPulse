@@ -90,7 +90,6 @@ def process_rss_feed(source_name: str, url: str, db: Session) -> tuple[int, int]
                 continue
 
             # Step 3: Hand off to Basim's function
-            # Ismail doesn't know or care what happens inside this function
             success = process_ingested_packet(packet, db)
 
             if success:
@@ -129,6 +128,10 @@ def run_ingestion_pipeline(db: Session) -> list[IngestionLog]:
 
     logger.info(f"Total sources to process: {len(sources)}")
 
+    #v = {"reddit_programming": "https://reddit.com/r/programming/.rss", "reddit_python": "https://reddit.com/r/Python/.rss", "reddit_technology": "https://reddit.com/r/technology/.rss"}
+
+    logger.info("******************** RUNNNING")
+
     for source_name, url in sources.items():
         logger.info(f"Processing source: {source_name}")
 
@@ -144,7 +147,7 @@ def run_ingestion_pipeline(db: Session) -> list[IngestionLog]:
                 f"process_rss_feed() finished. "
                 f"Fetched={fetched_count}, New={new_count}"
             )
-            time.sleep(2)
+            time.sleep(4)
 
         except Exception as e:
             logger.exception("Error inside process_rss_feed()")

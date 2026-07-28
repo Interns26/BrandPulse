@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import {
   Chart as ChartJS,
@@ -90,8 +90,17 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 5;
 
+  // Add Source Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newSubreddit, setNewSubreddit] = useState("");
+  const [sourceFormData, setSourceFormData] = useState({
+    name: "",
+    url: "",
+    is_active: true,
+    fetch_interval_minutes: 30,
+    last_fetched_at: "",
+  });
+  const [isSubmittingSource, setIsSubmittingSource] = useState(false);
+  const [sourceError, setSourceError] = useState("");
 
   // React State for active HTML theme class
   const [theme, setTheme] = useState(() =>
@@ -114,19 +123,20 @@ export default function Dashboard() {
   }, []);
 
   // 1. Fetch Active Sources for Subreddit Dropdown (/api/sources)
-  useEffect(() => {
-    const fetchSources = async () => {
-      try {
-        const res = await fetch("/api/sources");
-        if (!res.ok) throw new Error("Failed to fetch sources");
-        const data = await res.json();
-        setSources(data.sources || []);
-      } catch (err) {
-        console.error("Error loading sources:", err);
-      }
-    };
-    fetchSources();
+  const fetchSources = useCallback(async () => {
+    try {
+      const res = await fetch("/api/sources");
+      if (!res.ok) throw new Error("Failed to fetch sources");
+      const data = await res.json();
+      setSources(data.sources || []);
+    } catch (err) {
+      console.error("Error loading sources:", err);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchSources();
+  }, [fetchSources]);
 
   // 2. Fetch KPI Statistics (/api/stats)
   useEffect(() => {
@@ -225,6 +235,8 @@ export default function Dashboard() {
           params.append("sentiment", filters.sentiment);
         if (filters.priority !== "all")
           params.append("priority", filters.priority);
+        if (filters.intent !== "all")
+          params.append("intent", filters.intent);
 
         const res = await fetch(`/api/posts?${params.toString()}`);
         if (!res.ok) throw new Error("Failed to fetch posts");
@@ -247,13 +259,63 @@ export default function Dashboard() {
     setCurrentPage(1);
   };
 
-  const handleAddSource = async () => {
-    if (!newSubreddit.trim()) return;
-    const sourceKey = newSubreddit.trim().toLowerCase().replace(/^r\//, "");
+  const handleSourceInputChange = (field, value) => {
+    setSourceFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-    setSources((prev) => [...new Set([...prev, sourceKey])]);
-    setNewSubreddit("");
-    setIsModalOpen(false);
+  const resetModalForm = () => {
+    setSourceFormData({
+      name: "",
+      url: "",
+      is_active: true,
+      fetch_interval_minutes: 30,
+      last_fetched_at: "",
+    });
+    setSourceError("");
+    setIsSubmittingSource(false);
+  };
+
+  const handleAddSource = async (e) => {
+    if (e) e.preventDefault();
+    setSourceError("");
+
+    if (!sourceFormData.name.trim() || !sourceFormData.url.trim()) {
+      setSourceError("Name and URL are required fields.");
+      return;
+    }
+
+    setIsSubmittingSource(true);
+
+    try {
+      const payload = {
+        name: sourceFormData.name.trim(),
+        url: sourceFormData.url.trim(),
+        is_active: sourceFormData.is_active,
+        fetch_interval_minutes: Number(sourceFormData.fetch_interval_minutes) || 30,
+        last_fetched_at: sourceFormData.last_fetched_at
+          ? new Date(sourceFormData.last_fetched_at).toISOString()
+          : null,
+      };
+
+      const res = await fetch("/api/sources", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Failed to add new source.");
+      }
+
+      await fetchSources(); // Refresh sources list in dropdown
+      resetModalForm();
+      setIsModalOpen(false);
+    } catch (err) {
+      setSourceError(err.message || "An unexpected error occurred.");
+    } finally {
+      setIsSubmittingSource(false);
+    }
   };
 
   const getVar = (name) =>
@@ -493,7 +555,10 @@ export default function Dashboard() {
             Posts Feed & Filters
           </h2>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              resetModalForm();
+              setIsModalOpen(true);
+            }}
             className="px-4 py-2 bg-[var(--accent)] text-[var(--primary-foreground)] font-medium rounded-lg text-sm flex items-center gap-2 transition-transform active:scale-95 cursor-pointer hover:opacity-90"
           >
             <Icon icon="lucide:plus" className="w-4 h-4" />
@@ -606,7 +671,11 @@ export default function Dashboard() {
                 posts.map((post) => (
                   <tr
                     key={post.id}
-                    className="hover:bg-[var(--muted)]/50 transition-colors"
+                    onClick={() =>
+                      post.url &&
+                      window.open(post.url, "_blank", "noopener,noreferrer")
+                    }
+                    className="hover:bg-[var(--muted)]/50 transition-colors cursor-pointer"
                   >
                     <td className="p-3.5 text-[var(--muted-foreground)]">
                       {getRelativeTime(post.fetched_at)}
@@ -706,44 +775,144 @@ export default function Dashboard() {
       {/* Modal for Adding Source */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-          <div className="relative w-full max-w-md bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-2xl space-y-6">
+          <div className="relative w-full max-w-md bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-2xl space-y-5">
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                resetModalForm();
+                setIsModalOpen(false);
+              }}
               className="absolute top-4 right-4 text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-xl cursor-pointer"
             >
               &times;
             </button>
+
             <h3 className="text-lg font-bold text-[var(--foreground)]">
               Add New Source
             </h3>
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold text-[var(--foreground)]">
-                Subreddit Name
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., vuejs, python, learnprogramming"
-                value={newSubreddit}
-                onChange={(e) => setNewSubreddit(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddSource()}
-                className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--input-background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)]"
-              />
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="flex-1 py-2 px-4 rounded-lg border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddSource}
-                className="flex-1 py-2 px-4 rounded-lg bg-[var(--accent)] text-[var(--primary-foreground)] text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
-              >
-                <Icon icon="lucide:plus" className="w-4 h-4" />
-                <span>Add Source</span>
-              </button>
-            </div>
+
+            {sourceError && (
+              <div className="p-3 text-xs font-semibold rounded-lg bg-[var(--negative-bg)] text-[var(--negative-text)] border border-[var(--negative-accent)]/20">
+                {sourceError}
+              </div>
+            )}
+
+            <form onSubmit={handleAddSource} className="space-y-4">
+              {/* Name (Required) */}
+              <div>
+                <label className="block text-xs font-semibold text-[var(--foreground)] mb-1">
+                  Source Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., technology or vuejs"
+                  value={sourceFormData.name}
+                  onChange={(e) =>
+                    handleSourceInputChange("name", e.target.value)
+                  }
+                  required
+                  className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--input-background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)]"
+                />
+              </div>
+
+              {/* URL (Required) */}
+              <div>
+                <label className="block text-xs font-semibold text-[var(--foreground)] mb-1">
+                  Feed URL <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://www.reddit.com/r/technology/.rss"
+                  value={sourceFormData.url}
+                  onChange={(e) =>
+                    handleSourceInputChange("url", e.target.value)
+                  }
+                  required
+                  className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--input-background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)]"
+                />
+              </div>
+
+              {/* Fetch Interval Minutes (Optional) */}
+              <div>
+                <label className="block text-xs font-semibold text-[var(--foreground)] mb-1">
+                  Fetch Interval (minutes)
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="30"
+                  value={sourceFormData.fetch_interval_minutes}
+                  onChange={(e) =>
+                    handleSourceInputChange(
+                      "fetch_interval_minutes",
+                      e.target.value
+                    )
+                  }
+                  className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--input-background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)]"
+                />
+              </div>
+
+              {/* Last Fetched At (Optional) */}
+              <div>
+                <label className="block text-xs font-semibold text-[var(--foreground)] mb-1">
+                  Initial Last Fetched Timestamp (Optional)
+                </label>
+                <input
+                  type="datetime-local"
+                  value={sourceFormData.last_fetched_at}
+                  onChange={(e) =>
+                    handleSourceInputChange("last_fetched_at", e.target.value)
+                  }
+                  className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--input-background)] text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--accent)]"
+                />
+              </div>
+
+              {/* Active Toggle (Optional) */}
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={sourceFormData.is_active}
+                  onChange={(e) =>
+                    handleSourceInputChange("is_active", e.target.checked)
+                  }
+                  className="w-4 h-4 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] cursor-pointer"
+                />
+                <label
+                  htmlFor="is_active"
+                  className="text-xs font-semibold text-[var(--foreground)] cursor-pointer"
+                >
+                  Enable source fetching immediately
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetModalForm();
+                    setIsModalOpen(false);
+                  }}
+                  className="flex-1 py-2 px-4 rounded-lg border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)] text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingSource}
+                  className="flex-1 py-2 px-4 rounded-lg bg-[var(--accent)] text-[var(--primary-foreground)] text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isSubmittingSource ? (
+                    <span>Saving...</span>
+                  ) : (
+                    <>
+                      <Icon icon="lucide:plus" className="w-4 h-4" />
+                      <span>Add Source</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

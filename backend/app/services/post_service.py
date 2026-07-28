@@ -1,7 +1,11 @@
+from fastapi import HTTPException, status
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.exc import IntegrityError
 
-from app.database.models import Post, SentimentResult
+from app.database.models import Post, SentimentResult, RssSource, IntentResult
+
+from app.schemas.payloads import AddSource
 
 
 def get_posts(
@@ -11,6 +15,7 @@ def get_posts(
     priority: str | None = None,
     sentiment: str | None = None,
     source: str | None = None,
+    intent: str | None = None
 ):
 
     # Load related sentiment and intent tables
@@ -28,6 +33,11 @@ def get_posts(
     if sentiment:
         query = query.join(Post.sentiment_result).where(
             SentimentResult.sentiment == sentiment
+        )
+
+    if intent:
+        query = query.join(IntentResult).where(
+            IntentResult.intent_category == intent
         )
 
 
@@ -118,3 +128,34 @@ def get_sources(db: Session):
     return {
         "sources": list(sources)
     }
+
+def add_source(payload:AddSource, db: Session):
+
+    clean_name = payload.name.strip().lstrip("r/")
+    display_name = f"r/{clean_name}"
+
+    new_source = RssSource(
+        name = clean_name,
+        display_name = display_name,
+        url = payload.url,
+        is_active = payload.is_active,
+        fetch_interval_minutes = payload.fetch_interval_minutes,
+        last_fetched_at = payload.last_fetched_at
+    )
+
+    try:
+
+        db.add(new_source)
+        db.commit()
+        db.refresh(new_source)
+
+        return new_source
+
+    except IntegrityError:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail = f"Source with name {clean_name} already exists"
+        )

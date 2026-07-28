@@ -30,7 +30,7 @@ def start_scheduler():
     interval_minutes = settings.rss_fetch_interval_minutes
 
      # Run once immediately
-    # scheduled_ingestion_job()
+    scheduled_ingestion_job()
 
     scheduler.add_job(
         scheduled_ingestion_job,
