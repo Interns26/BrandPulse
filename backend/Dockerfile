@@ -3,7 +3,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc g++ cmake libpq-dev && rm -rf /var/lib/apt/lists/*
 
 # CRITICAL OPTIMIZATION: Install CPU-only PyTorch first to utilize Docker caching
 # This uses the official PyTorch CPU wheel index which downloads much faster
