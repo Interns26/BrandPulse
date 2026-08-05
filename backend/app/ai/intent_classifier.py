@@ -121,14 +121,10 @@ HYPOTHESIS_TEMPLATE = "This message is {}."
 classifierPipeline = pipeline(
     task="zero-shot-classification",
     model=LOCAL_MODEL_PATH,
-    use_safetensors=LOCAL_MODEL_PATH,
+    use_safetensors=True,
 )
 
-classifierPipeline2 = pipeline(
-    task="zero-shot-classification",
-    model=LOCAL_MODEL_PATH,
-    use_safetensors=LOCAL_MODEL_PATH,
-)
+
 
 BRANCH_THRESHOLD = 0.30
 MIN_BRANCHES = 1  # always keep at least the top branch even if none clear the bar
@@ -183,28 +179,6 @@ def analyzeIntent(text: str):
 
     return output
 
-
-def experimentWithFlatCaegorization(text: str) -> dict:
-
-    intent = classifierPipeline2(
-        text,
-        candidate_labels=CANDIDATE_LABELS,
-        multi_label=False,
-        hypothesis_template=HYPOTHESIS_TEMPLATE,
-    )
-
-    output = {}
-
-    if isinstance(intent, dict):
-
-
-        output = {
-            "category": LEAF_INTENTS[intent["labels"][0]],
-            "description": intent["labels"][0],
-            "confidence": round((intent["scores"][0] * 100), 2),
-        }
-
-    return output
 
 
 if __name__ == "__main__":
