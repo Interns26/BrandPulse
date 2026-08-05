@@ -4,6 +4,7 @@ from app.config import get_settings
 from app.database.session import SessionLocal
 from app.ingestion.rss_fetcher import run_ingestion_pipeline
 from app.ingestion.news_fetcher import fetch_competitive_news_articles
+from app.services.article_service import save_article
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -19,21 +20,44 @@ def scheduled_ingestion_job():
         logs = run_ingestion_pipeline(db)
         total_new = sum(log.posts_new for log in logs)
         logger.info(f"Ingestion cycle completed successfully. {total_new} new posts ingested.")
-    except Exception as e:
-        logger.error(f"Scheduled ingestion failed: {e}")
+    except Exception:
+        logger.exception("Scheduled competitive ingestion failed")
     finally:
         db.close()
 
 
 def scheduled_competitive_ingestion_job():
-    """Scheduled task for Sprint 2 competitive vulnerability news ingestion."""
-    logger.info("Starting scheduled Sprint 2 Competitive News ingestion cycle...")
+    """Fetch competitive news, persist raw articles, then process them."""
+    logger.info("Starting Sprint 2 Competitive News ingestion cycle...")
+
+    db = SessionLocal()
+
     try:
+        logger.info("Calling fetch_competitive_news_articles()...")
+
         articles = fetch_competitive_news_articles()
-        logger.info(f"Competitive ingestion cycle complete. Fetched & pre-filtered {len(articles)} articles.")
-        # Future integration point: Pass `articles` directly to Basim's run_vulnerability_pipeline(articles)
-    except Exception as e:
-        logger.error(f"Scheduled competitive ingestion failed: {e}")
+
+        logger.info(
+            f"Competitive ingestion fetched {len(articles)} articles."
+        )
+
+        for i, article_data in enumerate(articles, start=1):
+            logger.info(
+                f"Saving article {i}/{len(articles)}: "
+                f"{article_data.get('title', 'NO TITLE')}"
+            )
+
+            save_article(db, article_data)
+
+        logger.info(
+            f"Saved {len(articles)} competitive articles to database."
+        )
+
+    except Exception:
+        logger.exception("Scheduled competitive ingestion failed")
+
+    finally:
+        db.close()
 
 
 def start_scheduler():

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes_posts import router as posts_router
 from app.api.routes_stats import router as stats_router
+from app.api.articles import router as articles_router
 from app.database.session import init_db
 from app.ingestion.scheduler import start_scheduler, stop_scheduler
 
@@ -41,7 +42,7 @@ app.add_middleware(
 # Register API routes
 app.include_router(posts_router)
 app.include_router(stats_router)
-
+app.include_router(articles_router)
 
 @app.get("/")
 async def root():

@@ -168,3 +168,60 @@ class IngestionLog(Base):
         Index("idx_ingestion_logs_started", "started_at"),
         Index("idx_ingestion_logs_source", "source"),
     )
+
+
+class Article(Base):
+    __tablename__ = "articles"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
+
+    title = Column(
+        Text,
+        nullable=False
+    )
+
+    content = Column(
+        Text,
+        nullable=False
+    )
+
+    url = Column(
+        Text,
+        nullable=False,
+        unique=True
+    )
+
+    source_name = Column(
+        String(100),
+        nullable=False,
+        index=True
+    )
+
+    published_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        index=True
+    )
+
+    matched_competitors = Column(
+        JSON,
+        nullable=False,
+        default=list
+    )
+
+    matched_contexts = Column(
+        JSON,
+        nullable=False,
+        default=list
+    )
+
+    content_hash = Column(
+        String(64),
+        nullable=False,
+        unique=True,
+        index=True
+    )
