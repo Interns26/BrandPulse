@@ -13,6 +13,7 @@ from app.ingestion.cleaner import clean_text, prepare_text_for_ai
 
 # Basim provides this function — Ismail just imports and calls it
 from app.ai.pipeline import process_ingested_packet
+from app.ingestion.news_fetcher import fetch_competitive_news_articles
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -127,10 +128,7 @@ def run_ingestion_pipeline(db: Session) -> list[IngestionLog]:
         logger.info("Using default RSS sources from config.")
 
     logger.info(f"Total sources to process: {len(sources)}")
-
-    #v = {"reddit_programming": "https://reddit.com/r/programming/.rss", "reddit_python": "https://reddit.com/r/Python/.rss", "reddit_technology": "https://reddit.com/r/technology/.rss"}
-
-    logger.info("******************** RUNNNING")
+    logger.info("******************** RUNNING")
 
     for source_name, url in sources.items():
         logger.info(f"Processing source: {source_name}")
@@ -176,3 +174,12 @@ def run_ingestion_pipeline(db: Session) -> list[IngestionLog]:
     logger.info("=== Finished run_ingestion_pipeline ===")
 
     return logs
+
+
+def run_sprint2_ingestion_pipeline() -> list[dict]:
+    """
+    Sprint 2: Orchestrates fetching, cleaning, and pre-filtering competitive news articles.
+    Returns the ready-to-use article dictionaries for Basim's pipeline.
+    """
+    logger.info("=== Running Sprint 2 Competitive Ingestion Pipeline ===")
+    return fetch_competitive_news_articles()

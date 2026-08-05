@@ -7,11 +7,8 @@ def clean_html(raw_html: str) -> str:
     if not raw_html:
         return ""
 
-    # Remove actual HTML tags (<p>, <a href="...">, <b>)
     clean_re = re.compile(r"<[^>]+>")
     text = re.sub(clean_re, "", raw_html)
-
-    # Unescape HTML entities (&amp; -> &, &lt; -> <)
     text = html.unescape(text)
 
     return text.strip()
@@ -30,10 +27,8 @@ def clean_text(text: str) -> str:
     if not text:
         return ""
 
-    # Step 1: Remove HTML tags & unescape entities
     text = clean_html(text)
 
-    # Step 2: Remove Reddit RSS footer metadata (e.g., "submitted by /u/name [link] [comments]")
     text = re.sub(
         r"\s*submitted by\s+.*?(\[link\]|\[comments\])*",
         "",
@@ -41,20 +36,11 @@ def clean_text(text: str) -> str:
         flags=re.IGNORECASE,
     )
 
-    # Step 3: Convert Markdown links [Link Text](http://...) to plain 'Link Text'
     text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
-
-    # Step 4: Remove HTTP/HTTPS URLs
     text = re.sub(r"http[s]?://\S+", "", text)
-
-    # Step 5: Normalize Reddit user/subreddit tags
     text = re.sub(r"/u/\w+", "", text)
     text = re.sub(r"/r/\w+", "", text)
-
-    # Step 6: Remove leftover bracket tags like [link] or [comments]
     text = re.sub(r"\[link\]|\[comments\]", "", text, flags=re.IGNORECASE)
-
-    # Step 7: Normalize extra whitespace
     text = re.sub(r"\s+", " ", text)
 
     return text.strip()
@@ -73,3 +59,22 @@ def prepare_text_for_ai(title: str, content: str) -> str:
         return f"{clean_title}. {clean_content}"
 
     return clean_title or clean_content
+
+
+def clean_news_content(raw_content: str) -> str:
+    """
+    Sprint 2: Sanitizes full news article bodies extracted via Trafilatura or RSS.
+    Removes boilerplate tags, leftover inline scripts, and excessive whitespace while
+    preserving punctuation critical for downstream SLM copywriters.
+    """
+    if not raw_content:
+        return ""
+
+    text = clean_html(raw_content)
+    # Remove URL strings left in article text
+    text = re.sub(r"http[s]?://\S+", "", text)
+    # Normalize excessive newlines and double spaces
+    text = re.sub(r"\n+", "\n", text)
+    text = re.sub(r"[ \t]+", " ", text)
+
+    return text.strip()
