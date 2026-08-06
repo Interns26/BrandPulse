@@ -24,3 +24,6 @@ venv/
 backend/models_storage/*
 !backend/models_storage/**/.gitkeep
 !backend/models_storage/**/*.dvc
+
+output_articles.json
+ingestion_layer_with_vulnerability_pipeline_testing_output.txt
