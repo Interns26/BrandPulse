@@ -5,25 +5,36 @@ from app.database.session import SessionLocal
 from app.ingestion.rss_fetcher import run_ingestion_pipeline
 from app.ingestion.news_fetcher import fetch_competitive_news_articles
 from app.services.article_service import save_article
-
+from app.services.vulnerability_service import run_competitive_intelligence_job
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
 scheduler = BackgroundScheduler()
 
 
+
 def scheduled_ingestion_job():
     """Wrapper task for APScheduler to manage DB sessions safely for Sprint 1."""
     logger.info("Starting scheduled Sprint 1 RSS ingestion cycle...")
+
     db = SessionLocal()
+
     try:
         logs = run_ingestion_pipeline(db)
+
         total_new = sum(log.posts_new for log in logs)
-        logger.info(f"Ingestion cycle completed successfully. {total_new} new posts ingested.")
-    except Exception:
-        logger.exception("Scheduled competitive ingestion failed")
+
+        logger.info(
+            f"Ingestion cycle completed successfully. "
+            f"{total_new} new posts ingested."
+        )
+
+    except Exception as e:
+        logger.error(f"Scheduled ingestion failed: {e}")
+
     finally:
         db.close()
+
 
 
 def scheduled_competitive_ingestion_job():
@@ -53,6 +64,13 @@ def scheduled_competitive_ingestion_job():
             f"Saved {len(articles)} competitive articles to database."
         )
 
+        # NOW RUN AI PROCESSING
+        logger.info("Starting competitive intelligence processing...")
+
+        run_competitive_intelligence_job(db)
+
+        logger.info("Sprint 2 competitive cycle completed.")
+
     except Exception:
         logger.exception("Scheduled competitive ingestion failed")
 
@@ -60,16 +78,13 @@ def scheduled_competitive_ingestion_job():
         db.close()
 
 
+
 def start_scheduler():
-    """Starts the background scheduler for both Sprint 1 and Sprint 2 tasks."""
+    """Starts the background scheduler for Sprint 1 and Sprint 2 tasks."""
+
     sprint1_interval = settings.rss_fetch_interval_minutes
     sprint2_interval = settings.competitive_fetch_interval_minutes
 
-    # Run jobs once immediately on startup
-    scheduled_ingestion_job()
-    scheduled_competitive_ingestion_job()
-
-    # Sprint 1 Job Registration
     scheduler.add_job(
         scheduled_ingestion_job,
         trigger="interval",
@@ -78,7 +93,6 @@ def start_scheduler():
         replace_existing=True,
     )
 
-    # Sprint 2 Job Registration
     scheduler.add_job(
         scheduled_competitive_ingestion_job,
         trigger="interval",
@@ -88,13 +102,18 @@ def start_scheduler():
     )
 
     scheduler.start()
-    logger.info(
-        f"Ingestion scheduler running. Sprint 1 every {sprint1_interval}m, Sprint 2 every {sprint2_interval}m."
-    )
 
+    logger.info(
+        f"Ingestion scheduler running. "
+        f"Sprint 1 every {sprint1_interval}m, "
+        f"Sprint 2 every {sprint2_interval}m."
+    )
 
 def stop_scheduler():
     """Shuts down the background scheduler gracefully."""
     if scheduler.running:
         scheduler.shutdown(wait=False)
         logger.info("Ingestion scheduler stopped.")
+
+
+

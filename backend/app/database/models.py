@@ -225,3 +225,166 @@ class Article(Base):
         unique=True,
         index=True
     )
+    vulnerability_processed = Column(
+    Boolean,
+    nullable=False,
+    default=False,
+    index=True
+)
+    vulnerability_result = relationship(
+    "VulnerabilityResult",
+    back_populates="article",
+    uselist=False,
+    cascade="all, delete-orphan"
+)
+
+class VulnerabilityResult(Base):
+    __tablename__ = "vulnerability_results"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
+
+    # ==========================
+    # Article Relationship
+    # ==========================
+    article_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("articles.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True
+    )
+
+    # ==========================
+    # Vulnerability Detection
+    # ==========================
+    is_relevant = Column(
+        Boolean,
+        nullable=False
+    )
+
+    matched_competitors = Column(
+        JSON,
+        nullable=False,
+        default=list
+    )
+
+    vulnerability_type = Column(
+        String(100),
+        nullable=True
+    )
+
+    confidence_score = Column(
+        Float,
+        nullable=False
+    )
+
+    # ==========================
+    # Opportunity Scoring
+    # ==========================
+    opportunity_score = Column(
+        Float,
+        nullable=True
+    )
+
+    severity_score = Column(
+        Float,
+        nullable=True
+    )
+
+    volume_score = Column(
+        Float,
+        nullable=True
+    )
+
+    urgency_score = Column(
+        Float,
+        nullable=True
+    )
+
+    priority_label = Column(
+        String(20),
+        nullable=True
+    )
+
+    # ==========================
+    # Department Brief
+    # ==========================
+    brief_headline = Column(
+        Text,
+        nullable=True
+    )
+
+    vulnerability_summary = Column(
+        Text,
+        nullable=True
+    )
+
+    target_department = Column(
+        String(100),
+        nullable=True
+    )
+
+    recommended_action = Column(
+        Text,
+        nullable=True
+    )
+
+    brief_urgency = Column(
+        String(20),
+        nullable=True
+    )
+
+    # ==========================
+    # Fact Audit
+    # ==========================
+    fact_audit_passed = Column(
+        Boolean,
+        nullable=True
+    )
+
+    flagged_claims = Column(
+        JSON,
+        nullable=False,
+        default=list
+    )
+
+    # ==========================
+    # Processing Metadata
+    # ==========================
+    processed_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+    # ==========================
+    # Relationship
+    # ==========================
+    article = relationship(
+        "Article",
+        back_populates="vulnerability_result"
+    )
+
+    # ==========================
+    # Indexes
+    # ==========================
+    __table_args__ = (
+        Index(
+            "idx_vulnerability_article_id",
+            "article_id"
+        ),
+        Index(
+            "idx_vulnerability_type",
+            "vulnerability_type"
+        ),
+        Index(
+            "idx_vulnerability_priority",
+            "priority_label"
+        ),
+        Index(
+            "idx_vulnerability_opportunity_score",
+            "opportunity_score"
+        ),
+    )

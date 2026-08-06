@@ -1,7 +1,7 @@
 from pathlib import Path
 from llama_cpp import Llama
 import json
-from vulnerability_prompts import (
+from .vulnerability_prompts import (
     QWEN_SUMMARIZER_SYSTEM_PROMPT,
     build_summarizer_user_prompt,
     STAGE2_SYSTEM_PROMPT,
