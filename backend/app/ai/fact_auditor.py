@@ -23,11 +23,28 @@ def extract_claims(brief: dict) -> list[str]:
     return claims
 
 
+def chunk_source_text(
+    source_text: str, max_words: int = 300, overlap: int = 50
+) -> list[str]:
+
+    words = source_text.split()
+
+    if not words:
+        return []
+
+    return [
+        " ".join(words[i : i + max_words])
+        for i in range(0, len(words), max_words - overlap)
+    ]
+
+
 def audit_action_brief(
-    source_text: str, brief: dict, contradiction_threshold: float = 0.60
+    source_text: str, brief: dict, contradiction_threshold: float = 0.50
 ):
 
     claims = extract_claims(brief)
+
+    chunked_source_text = chunk_source_text(source_text)
 
     flagged_claims = []
 
@@ -35,21 +52,34 @@ def audit_action_brief(
 
         hypothesis_template = f"The claim '{claim}' is " + "{}"
 
-        output = nli_auditor(
-            source_text,
-            candidate_labels=[
-                "contradiction to the article",
-                "supported by the article",
-            ],
-            hypothesis_template=hypothesis_template,
-        )
+        max_contradiction_score = 0.0
 
-        if isinstance(output, dict):
+        for chunk in chunked_source_text:
 
-            for label, scr in zip(output["labels"], output["scores"]):
+            output = nli_auditor(
+                chunk,
+                candidate_labels=[
+                    "contradiction to the article",
+                    "supported by the article",
+                ],
+                hypothesis_template=hypothesis_template,
+            )
 
-                if label =="contradiction to the article" and scr > contradiction_threshold:
-                    flagged_claims.append(claim)
+            if isinstance(output, dict):
+
+                for label, scr in zip(output["labels"], output["scores"]):
+
+                    if (
+                        label == "contradiction to the article"
+                        and max_contradiction_score < scr
+                    ):
+                        max_contradiction_score = scr
+
+                if max_contradiction_score > contradiction_threshold:
+                    break
+
+        if max_contradiction_score > contradiction_threshold:
+            flagged_claims.append(claim)
 
     return {
         "is_passed": len(flagged_claims) == 0,

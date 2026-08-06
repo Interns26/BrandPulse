@@ -2,6 +2,8 @@ from pathlib import Path
 from llama_cpp import Llama
 import json
 from vulnerability_prompts import (
+    QWEN_SUMMARIZER_SYSTEM_PROMPT,
+    build_summarizer_user_prompt,
     STAGE2_SYSTEM_PROMPT,
     build_action_brief_user_prompt,
 )
@@ -22,17 +24,54 @@ QWEN_LOCAL_MODEL_PATH = str(
 )
 
 
+def generate_article_summary(
+    competitors: list[str], vulnerability_type: str, article: str
+):
+
+    user_prompt = build_summarizer_user_prompt(competitors, vulnerability_type, article)
+    system_prompt = QWEN_SUMMARIZER_SYSTEM_PROMPT
+
+    qwen = LOCAL_MODELS.get("qwen", None)
+
+    if qwen is None:
+
+        qwen = Llama(
+            model_path=QWEN_LOCAL_MODEL_PATH,
+            n_ctx=4096,
+            verbose=False,
+        )
+
+        LOCAL_MODELS["qwen"] = qwen
+
+    response = qwen.create_chat_completion(
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0.2,
+        max_tokens=384,
+    )
+
+    raw_text = response["choices"][0]["message"]["content"].strip()
+
+    if raw_text.startswith("```"):
+        raw_text = raw_text.replace("```json", "").replace("```", "").strip()
+
+    # Parse JSON payload
+    return raw_text
+
+
 def generate_action_brief(
     competitors: list[str],
     vulnerability_type: str,
-    article_context: str,
+    article: str,
     opportunity_score: float,
 ) -> dict:
 
+    competitors_str = ", ".join(competitors) if len(competitors) > 0 else "Target Competitor"
+    
 
-    competitors_str = ", ".join(competitors) if len(competitors)>0 else ["Target Competitor"]
-
-    if opportunity_score >= 40.0:
+    if opportunity_score >= 0.0:
 
         llama = LOCAL_MODELS.get("llama", None)
 
@@ -50,28 +89,32 @@ def generate_action_brief(
         else:
             model = llama
 
-    else:
+    # else:
 
-        qwen = LOCAL_MODELS.get("qwen", None)
+    #     qwen = LOCAL_MODELS.get("qwen", None)
 
-        if qwen is None:
+    #     if qwen is None:
 
-            qwen = Llama(
-                model_path=QWEN_LOCAL_MODEL_PATH,
-                n_ctx=2048,
-                verbose=False,
-            )
+    #         qwen = Llama(
+    #             model_path=QWEN_LOCAL_MODEL_PATH,
+    #             n_ctx=4096,
+    #             verbose=False,
+    #         )
 
-            LOCAL_MODELS["qwen"] = qwen
+    #         LOCAL_MODELS["qwen"] = qwen
 
-            model = qwen
-        else:
-            model = qwen
+    #         model = qwen
+    #     else:
+    #         model = qwen
+
+    article_summary = generate_article_summary(competitors, vulnerability_type, article)
+
+    print(f"\nSummary by Qwen: {article_summary}")
 
     system_prompt = STAGE2_SYSTEM_PROMPT
 
     user_prompt = build_action_brief_user_prompt(
-        competitors, vulnerability_type, opportunity_score, article_context
+        competitors, vulnerability_type, opportunity_score, article_summary
     )
 
     try:
@@ -81,7 +124,7 @@ def generate_action_brief(
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            temperature=0.2,
+            temperature=0.7,
             max_tokens=384,
             response_format={"type": "json_object"},
         )
@@ -96,7 +139,7 @@ def generate_action_brief(
 
     except Exception as e:
 
-      return {
+        return {
             "headline": f"Exploit recent {vulnerability_type} vulnerability affecting {competitors_str}",
             "vulnerability_summary": f"Identified {vulnerability_type} involving {competitors_str} in media coverage.",
             "target_department": "SALES",
