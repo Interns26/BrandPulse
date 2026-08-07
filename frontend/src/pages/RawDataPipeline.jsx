@@ -1,94 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
 import { Icon } from "@iconify/react";
 
-// ============================================================================
-// MOCK API DATA STRUCTURE
-// Matching screenshot layout & API backend specifications
-// Expected Endpoint: GET /api/v1/raw-pipeline/articles
-// ============================================================================
-const MOCK_RAW_ARTICLES = [
-  {
-    id: "raw-101",
-    title: "Square payment processing down for 6+ hours nationwide",
-    source: "Fundus",
-    published: "4h ago",
-    matchedEntity: "Square",
-    matchedContext: "payment outage",
-    preFilterStatus: "Pass", // Options: 'Pass' | 'Fail'
-    rawUrl: "https://example.com/news/square-outage-6h",
-    contentSnippet: "Square merchants experienced nationwide payment processing downtime lasting over 6 hours during peak business hours...",
-    rawJson: { feed_id: "rss_fundus_091", word_count: 642, confidence_score: 0.96 }
-  },
-  {
-    id: "raw-102",
-    title: "Clover investigating possible customer data exposure",
-    source: "Google News",
-    published: "6h ago",
-    matchedEntity: "Clover",
-    matchedContext: "data breach",
-    preFilterStatus: "Pass",
-    rawUrl: "https://example.com/news/clover-data-investigation",
-    contentSnippet: "Security researchers identified unencrypted API responses from Clover merchant portals, prompting an internal audit...",
-    rawJson: { feed_id: "gn_tech_4821", word_count: 512, confidence_score: 0.91 }
-  },
-  {
-    id: "raw-103",
-    title: "Toast raises subscription fees 15% for restaurant tier",
-    source: "Fundus",
-    published: "1d ago",
-    matchedEntity: "Toast",
-    matchedContext: "price increase",
-    preFilterStatus: "Pass",
-    rawUrl: "https://example.com/news/toast-fee-hike-restaurant",
-    contentSnippet: "Toast announced updated pricing tiers for restaurant partners, introducing a mandatory 15% base fee increase effective next month...",
-    rawJson: { feed_id: "rss_fundus_104", word_count: 420, confidence_score: 0.88 }
-  },
-  {
-    id: "raw-104",
-    title: "Local coffee shop switches to new POS system, cites ease of use",
-    source: "Reddit RSS",
-    published: "9h ago",
-    matchedEntity: "—",
-    matchedContext: "—",
-    preFilterStatus: "Fail",
-    failureReason: "No target competitor entity detected in article content.",
-    rawUrl: "https://reddit.com/r/smallbusiness/comments/pos_switch",
-    contentSnippet: "We decided to switch our shop POS setup after struggling with slow terminal updates...",
-    rawJson: { feed_id: "reddit_sb_392", word_count: 180, confidence_score: 0.21 }
-  },
-  {
-    id: "raw-105",
-    title: "Lightspeed expands retail inventory tools across North America",
-    source: "Google News",
-    published: "1d ago",
-    matchedEntity: "Lightspeed",
-    matchedContext: "product update",
-    preFilterStatus: "Pass",
-    rawUrl: "https://example.com/news/lightspeed-inventory-update",
-    contentSnippet: "Lightspeed Commerce announced new multi-location inventory sync capabilities targeting mid-market retailers...",
-    rawJson: { feed_id: "gn_retail_891", word_count: 730, confidence_score: 0.94 }
-  },
-  {
-    id: "raw-106",
-    title: "General discussion on payment hardware reliability",
-    source: "Reddit RSS",
-    published: "2d ago",
-    matchedEntity: "—",
-    matchedContext: "—",
-    preFilterStatus: "Fail",
-    failureReason: "Generic content; lacks actionable competitive intelligence metrics.",
-    rawUrl: "https://reddit.com/r/hardware/comments/payment_terminals",
-    contentSnippet: "Looking for opinions on overall terminal lifespan when running high volume customer taps daily...",
-    rawJson: { feed_id: "reddit_hw_110", word_count: 240, confidence_score: 0.15 }
-  }
-];
-
 export default function RawDataPipeline() {
   // --------------------------------------------------------------------------
   // STATE MANAGEMENT
   // --------------------------------------------------------------------------
-  const [articles, setArticles] = useState(MOCK_RAW_ARTICLES);
-  const [isLoading, setIsLoading] = useState(false);
+  const [articles, setArticles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState(null);
 
@@ -103,50 +21,76 @@ export default function RawDataPipeline() {
   const itemsPerPage = 4;
 
   // --------------------------------------------------------------------------
-  // BACKEND API INTEGRATION PLACEHOLDERS
+  // BACKEND API INTEGRATION: GET /api/articles
   // --------------------------------------------------------------------------
-  useEffect(() => {
-    /*
-      BACKEND INTEGRATION POINT 1: Initial Ingestion Data Fetch
-      
-      async function fetchPipelineArticles() {
-        setIsLoading(true);
-        try {
-          // Pass active filters directly to API query parameters if server-side filtering is preferred:
-          // const res = await fetch(`/api/v1/raw-pipeline/articles?source=${selectedSource}&status=${selectedStatus}&q=${searchQuery}`);
-          const res = await fetch('/api/v1/raw-pipeline/articles');
-          const data = await res.json();
-          setArticles(data.articles);
-        } catch (err) {
-          setError("Failed to load raw pipeline data.");
-        } finally {
-          setIsLoading(false);
-        }
+  const fetchPipelineArticles = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/articles");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      fetchPipelineArticles();
-    */
-  }, []);
+      const data = await response.json();
+      const rawArticles = Array.isArray(data) ? data : data.articles || [];
 
-  // Trigger Manual Ingestion Fetch
-  const handleTriggerFetchCycle = async () => {
-    setIsFetching(true);
-    /*
-      BACKEND INTEGRATION POINT 2: Trigger Manual Fetch Cycle
-      
-      try {
-        const res = await fetch('/api/v1/raw-pipeline/trigger-fetch', { method: 'POST' });
-        const result = await res.json();
-        // Refresh articles list after fetch completes
-      } catch (err) {
-        console.error("Failed to trigger fetch cycle", err);
-      }
-    */
-    setTimeout(() => {
-      setIsFetching(false);
-    }, 1200);
+      // Map backend Article schema to UI model
+      const normalizedData = rawArticles.map((item) => ({
+        id: item.id || `raw-${Math.random().toString(36).substr(2, 9)}`,
+        title: item.title || "Untitled Ingestion Record",
+        source: item.source_name || item.source || "RSS Feed",
+        published: item.published_at
+          ? new Date(item.published_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : item.published || "Recently",
+        matchedEntity: item.matched_entity || item.matchedEntity || item.competitor || "—",
+        matchedContext: item.matched_context || item.matchedContext || "—",
+        preFilterStatus:
+          item.pre_filter_status ||
+          item.preFilterStatus ||
+          (item.matched_entity || item.competitor ? "Pass" : "Fail"),
+        failureReason:
+          item.failure_reason ||
+          item.failureReason ||
+          (item.matched_entity ? null : "No target competitor entity detected."),
+        rawUrl: item.url || item.rawUrl || "#",
+        contentSnippet: item.content || item.contentSnippet || "No snippet available.",
+        rawJson: item.raw_json || item.rawJson || {
+          feed_id: item.source_name || "rss_feed",
+          word_count: item.content ? item.content.split(" ").length : 0,
+          published_at: item.published_at,
+          url: item.url,
+        },
+      }));
+
+      setArticles(normalizedData);
+    } catch (err) {
+      console.error("Error fetching raw articles:", err);
+      setError("Failed to load raw pipeline data from backend.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Dynamic Sources List (combines default choices with dynamic sources from data)
+  useEffect(() => {
+    fetchPipelineArticles();
+  }, []);
+
+  // --------------------------------------------------------------------------
+  // TRIGGER MANUAL FETCH CYCLE
+  // --------------------------------------------------------------------------
+  const handleTriggerFetchCycle = async () => {
+    setIsFetching(true);
+    try {
+      await fetch("/api/articles/trigger-fetch", { method: "POST" });
+      await fetchPipelineArticles();
+    } catch (err) {
+      console.error("Failed to trigger fetch cycle:", err);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  // Dynamic Sources List
   const availableSources = useMemo(() => {
     const sourcesSet = new Set(articles.map((item) => item.source));
     return ["All Sources", ...Array.from(sourcesSet)];
@@ -157,28 +101,29 @@ export default function RawDataPipeline() {
   // --------------------------------------------------------------------------
   const filteredArticles = useMemo(() => {
     return articles.filter((item) => {
-      // 1. Source Dropdown Filter
-      if (selectedSource !== "All Sources" && item.source !== selectedSource) {
-        return false;
-      }
-      // 2. Pre-filter Status Dropdown Filter
-      if (selectedStatus !== "All" && item.preFilterStatus !== selectedStatus) {
-        return false;
-      }
-      // 3. Keyword Free-Text Search Filter
+      if (selectedSource !== "All Sources" && item.source !== selectedSource) return false;
+      if (selectedStatus !== "All" && item.preFilterStatus !== selectedStatus) return false;
       if (searchQuery.trim() !== "") {
         const query = searchQuery.toLowerCase();
         const matchesTitle = item.title.toLowerCase().includes(query);
         const matchesEntity = item.matchedEntity.toLowerCase().includes(query);
         const matchesContext = item.matchedContext.toLowerCase().includes(query);
         const matchesSource = item.source.toLowerCase().includes(query);
-        if (!matchesTitle && !matchesEntity && !matchesContext && !matchesSource) {
-          return false;
-        }
+        if (!matchesTitle && !matchesEntity && !matchesContext && !matchesSource) return false;
       }
       return true;
     });
   }, [articles, selectedSource, selectedStatus, searchQuery]);
+
+  // Derived Metrics
+  const passCount = useMemo(
+    () => articles.filter((a) => a.preFilterStatus === "Pass").length,
+    [articles]
+  );
+  const passRate = useMemo(
+    () => (articles.length ? Math.round((passCount / articles.length) * 100) : 0),
+    [articles, passCount]
+  );
 
   // Pagination Math
   const totalPages = Math.ceil(filteredArticles.length / itemsPerPage) || 1;
@@ -205,50 +150,45 @@ export default function RawDataPipeline() {
 
       {/* KPI STAT CARDS SECTION */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Articles Fetched */}
         <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-2">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
-            ARTICLES FETCHED (24H)
+            ARTICLES FETCHED
           </span>
-          <div className="text-3xl font-bold">8</div>
+          <div className="text-3xl font-bold">{articles.length}</div>
           <div>
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-              ↑ Fundus + Google News + Reddit
+              ↑ Google News + RSS
             </span>
           </div>
         </div>
 
-        {/* Card 2: Pre-filter Pass Rate */}
         <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-2">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
             PRE-FILTER PASS RATE
           </span>
-          <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">75%</div>
-          <div className="text-xs text-[var(--muted-foreground)]">6 of 8 passed</div>
+          <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{passRate}%</div>
+          <div className="text-xs text-[var(--muted-foreground)]">{passCount} of {articles.length} passed</div>
         </div>
 
-        {/* Card 3: Sent to AI Pipeline */}
         <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-2">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
             SENT TO AI PIPELINE
           </span>
-          <div className="text-3xl font-bold">6</div>
-          <div className="text-xs text-[var(--muted-foreground)]">awaiting / processed by Basim's stages</div>
+          <div className="text-3xl font-bold">{passCount}</div>
+          <div className="text-xs text-[var(--muted-foreground)]">processed by vulnerability classifier</div>
         </div>
 
-        {/* Card 4: Last Fetch Cycle */}
         <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-2">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
             LAST FETCH CYCLE
           </span>
-          <div className="text-3xl font-bold">4m ago</div>
+          <div className="text-3xl font-bold">Active</div>
           <div className="text-xs text-[var(--muted-foreground)]">runs every 30 min</div>
         </div>
       </div>
 
       {/* MAIN MONITOR TABLE CONTAINER */}
       <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-6">
-        {/* Card Header & Trigger Button */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="text-base font-bold text-[var(--foreground)]">Raw RSS Data Pipeline Monitor</h2>
           <button
@@ -266,7 +206,6 @@ export default function RawDataPipeline() {
 
         {/* TOP FILTER BAR */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Dropdown 1: Filter by Source */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase">
               Filter by Source
@@ -287,7 +226,6 @@ export default function RawDataPipeline() {
             </select>
           </div>
 
-          {/* Dropdown 2: Pre-filter Status */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase">
               Pre-filter Status
@@ -306,7 +244,6 @@ export default function RawDataPipeline() {
             </select>
           </div>
 
-          {/* Keyword Free-Text Search */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase">
               Keyword Search
@@ -326,7 +263,8 @@ export default function RawDataPipeline() {
 
         {/* DATA DISPLAY TABLE */}
         {isLoading ? (
-          <div className="py-12 text-center text-sm text-[var(--muted-foreground)]">
+          <div className="py-12 text-center text-sm text-[var(--muted-foreground)] flex items-center justify-center gap-2">
+            <Icon icon="lucide:loader-2" className="w-4 h-4 animate-spin" />
             Loading pipeline ingestion data...
           </div>
         ) : error ? (
@@ -356,7 +294,6 @@ export default function RawDataPipeline() {
 
                   return (
                     <tr key={row.id} className="group hover:bg-[var(--muted)]/40 transition-colors">
-                      {/* Chevron expand trigger */}
                       <td className="py-4 px-2">
                         <button
                           onClick={() => toggleRowExpand(row.id)}
@@ -371,34 +308,28 @@ export default function RawDataPipeline() {
                         </button>
                       </td>
 
-                      {/* Title Column */}
                       <td className="py-4 px-4 font-semibold text-[var(--foreground)] max-w-xs md:max-w-md">
                         <div className="truncate" title={row.title}>
                           {row.title}
                         </div>
                       </td>
 
-                      {/* Source Column */}
                       <td className="py-4 px-4 text-[var(--muted-foreground)] font-medium">
                         {row.source}
                       </td>
 
-                      {/* Published Column */}
                       <td className="py-4 px-4 text-[var(--muted-foreground)] whitespace-nowrap">
                         {row.published}
                       </td>
 
-                      {/* Matched Entity Column */}
                       <td className="py-4 px-4 font-medium text-[var(--foreground)]">
                         {row.matchedEntity}
                       </td>
 
-                      {/* Matched Context Column */}
                       <td className="py-4 px-4 text-[var(--muted-foreground)]">
                         {row.matchedContext}
                       </td>
 
-                      {/* Pre-filter Status Badge */}
                       <td className="py-4 px-4 text-right whitespace-nowrap">
                         <span
                           className={`inline-block px-2.5 py-0.5 text-[11px] font-bold rounded-md ${
@@ -418,7 +349,7 @@ export default function RawDataPipeline() {
           </div>
         )}
 
-        {/* EXPANDABLE DETAIL DRAWER (RENDERED WHEN ROW IS CLICKED) */}
+        {/* EXPANDABLE DETAIL DRAWER */}
         {expandedRowId && (
           <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 text-xs space-y-3 animate-in fade-in duration-150">
             <div className="flex items-center justify-between">

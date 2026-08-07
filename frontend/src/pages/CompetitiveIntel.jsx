@@ -1,128 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
 import { Icon } from "@iconify/react";
 
-// ============================================================================
-// ENRICHED DUMMY API DATA STRUCTURE
-// Unique fields added for every opportunity card to support the modal details
-// Expected backend endpoint: GET /api/v1/competitor-intel
-// ============================================================================
-const DUMMY_OPPORTUNITIES = [
-  {
-    id: "opp-1",
-    competitor: "Square",
-    vulnerabilityType: "System Outages",
-    priority: "Critical",
-    title: "Square payment processing down for 6+ hours nationwide",
-    opportunityScore: 94,
-    tag: "SALES",
-    alertSent: true,
-    recommendedAction: "Reach out to affected Square merchants in the region with a same-day migration offer.",
-    source: "TechCrunch",
-    timestamp: "3h ago",
-    acknowledged: false,
-    // Detailed Modal Fields
-    rationale: "Merchants unable to process transactions during peak hours; high switching intent window.",
-    targetAudience: "Small-to-mid retail merchants currently on Square",
-    suggestedOutreachMessage: '"Hi [Name], we noticed today\'s Square outage may have disrupted your sales. Our POS platform guarantees 99.99% uptime with a dedicated failover line — happy to set up a same-day account so you\'re covered before your next rush."',
-  },
-  {
-    id: "opp-2",
-    competitor: "Clover",
-    vulnerabilityType: "Data Breach",
-    priority: "Critical",
-    title: "Clover investigating possible customer data exposure",
-    opportunityScore: 89,
-    tag: "MARKETING",
-    alertSent: true,
-    recommendedAction: "Publish a security trust-center blog post and run paid social to affected merchant segment.",
-    source: "Krebs on Security",
-    timestamp: "5h ago",
-    acknowledged: false,
-    // Detailed Modal Fields
-    rationale: "Security vulnerabilities drive decision-makers to seek SOC2-certified enterprise alternatives immediately.",
-    targetAudience: "Multi-location hospitality groups concerned about PCI compliance",
-    suggestedOutreachMessage: '"Hi [Name], customer trust is paramount. While recent industry headlines highlight security vulnerabilities, our architecture ensures end-to-end tokenization and zero data liability. Let\'s review your compliance setup today."',
-  },
-  {
-    id: "opp-3",
-    competitor: "Toast",
-    vulnerabilityType: "Price Hikes",
-    priority: "High",
-    title: "Toast introduces mandatory 0.99% fee on online ordering platforms",
-    opportunityScore: 82,
-    tag: "SALES",
-    alertSent: true,
-    recommendedAction: "Launch 'No Hidden Fee Guarantee' campaign targeting Toast restaurant partners.",
-    source: "Restaurant Business",
-    timestamp: "1d ago",
-    acknowledged: false,
-    // Detailed Modal Fields
-    rationale: "Surprise transaction fees directly cut into merchant margins, causing public operator pushback.",
-    targetAudience: "Independent full-service and quick-service restaurant owners",
-    suggestedOutreachMessage: '"Hi [Name], tired of unexpected transaction fees shrinking your margins? Switch to our flat-rate processing plan with 0% online ordering markups guaranteed for 24 months."',
-  },
-  {
-    id: "opp-4",
-    competitor: "Lightspeed",
-    vulnerabilityType: "Layoffs",
-    priority: "Medium",
-    title: "Lightspeed cuts 10% of support and customer success workforce",
-    opportunityScore: 68,
-    tag: "SALES",
-    alertSent: false,
-    recommendedAction: "Target enterprise accounts emphasizing 24/7 dedicated account management SLAs.",
-    source: "Bloomberg",
-    timestamp: "2d ago",
-    acknowledged: false,
-    // Detailed Modal Fields
-    rationale: "Support cutbacks lead to increased ticket resolution times and merchant dissatisfaction.",
-    targetAudience: "Mid-market retail chains relying heavily on dedicated account support",
-    suggestedOutreachMessage: '"Hi [Name], when systems need attention, waiting hours for support isn\'t an option. We offer guaranteed 2-minute phone response times and dedicated US-based account managers."',
-  },
-  {
-    id: "opp-5",
-    competitor: "Square",
-    vulnerabilityType: "PR Crisis",
-    priority: "Medium",
-    title: "Merchant complaints spike regarding unexpected risk account holds",
-    opportunityScore: 61,
-    tag: "MARKETING",
-    alertSent: false,
-    recommendedAction: "Promote instant settlement guarantees and transparent risk review procedures.",
-    source: "Reddit /r/smallbusiness",
-    timestamp: "2d ago",
-    acknowledged: false,
-    // Detailed Modal Fields
-    rationale: "Arbitrary account holds disrupt merchant cash flow, prompting urgent platform switches.",
-    targetAudience: "High-volume e-commerce and omnichannel sellers",
-    suggestedOutreachMessage: '"Hi [Name], cash flow is the heartbeat of your business. Our transparent underwriting ensures no arbitrary holds and next-day payout guarantees."',
-  },
-  {
-    id: "opp-6",
-    competitor: "Toast",
-    vulnerabilityType: "System Outages",
-    priority: "Low",
-    title: "Minor API latency issues reported during dinner rush hour",
-    opportunityScore: 35,
-    tag: "PRODUCT",
-    alertSent: false,
-    recommendedAction: "Monitor status page; defer outbound messaging unless outage escalates.",
-    source: "StatusPage",
-    timestamp: "3d ago",
-    acknowledged: false,
-    // Detailed Modal Fields
-    rationale: "Minor latency observed; potential indicator of underlying infrastructure instability.",
-    targetAudience: "High-volume dinner-only dining establishments",
-    suggestedOutreachMessage: '"Hi [Name], offline resilience matters most when your dining room is full. See how our local network fallback keeps orders firing even when internet connectivity degrades."',
-  },
-];
-
 export default function CompetitiveIntel() {
   // --------------------------------------------------------------------------
   // STATE MANAGEMENT
   // --------------------------------------------------------------------------
-  const [opportunities, setOpportunities] = useState(DUMMY_OPPORTUNITIES);
-  const [isLoading, setIsLoading] = useState(false);
+  const [opportunities, setOpportunities] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Filter dropdown state variables
@@ -138,26 +22,81 @@ export default function CompetitiveIntel() {
   const [toastMessage, setToastMessage] = useState(null);
 
   // --------------------------------------------------------------------------
-  // BACKEND API INTEGRATION PLACEHOLDERS
+  // BACKEND API INTEGRATION: GET /api/vulnerabilities
   // --------------------------------------------------------------------------
-  useEffect(() => {
-    // BACKEND INTEGRATION POINT: Fetch Initial Data
-    /*
-    async function fetchIntelData() {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/v1/competitor-intel');
-        const data = await response.json();
-        setOpportunities(data);
-      } catch (err) {
-        setError("Failed to fetch competitive intelligence data.");
-      } finally {
-        setIsLoading(false);
+  const fetchIntelData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/vulnerabilities");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      const data = await response.json();
+
+      // Normalize backend snake_case response to frontend component format
+      const normalizedData = data.map((item) => ({
+        id: item.id || `opp-${Math.random().toString(36).substr(2, 9)}`,
+        competitor: item.competitor || item.entity_name || item.entity || "Unknown",
+        vulnerabilityType: item.vulnerability_type || item.vulnerabilityType || "General",
+        priority: item.priority || "Medium",
+        title: item.title || item.headline || "Untitled Opportunity",
+        opportunityScore: item.opportunity_score ?? item.opportunityScore ?? 50,
+        tag: item.department || item.tag || "SALES",
+        alertSent: item.alert_sent ?? item.alertSent ?? false,
+        recommendedAction: item.recommended_action || item.recommendedAction || "No action specified",
+        source: item.source_name || item.source || "News",
+        timestamp: item.processed_at
+          ? new Date(item.processed_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : item.timestamp || "Recently",
+        acknowledged: item.acknowledged ?? false,
+        rationale: item.rationale || "No detailed rationale provided.",
+        targetAudience: item.target_audience || item.targetAudience || "Target merchants",
+        suggestedOutreachMessage:
+          item.suggested_outreach_message ||
+          item.suggestedOutreachMessage ||
+          item.outreach_message ||
+          "No outreach message template available.",
+      }));
+
+      setOpportunities(normalizedData);
+    } catch (err) {
+      console.error("Error fetching competitive intel:", err);
+      setError("Failed to load competitive intelligence data from backend.");
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchIntelData();
-    */
   }, []);
+
+  // --------------------------------------------------------------------------
+  // HANDLERS & API ACTIONS
+  // --------------------------------------------------------------------------
+  const handleAcknowledge = async (id, competitorName) => {
+    // Optimistic UI Update
+    setOpportunities((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, acknowledged: true } : item))
+    );
+
+    // Trigger Toast Notification
+    setToastMessage(`${competitorName} opportunity acknowledged`);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 4000);
+
+    // Backend API Call
+    try {
+      await fetch(`/api/vulnerabilities/${id}/acknowledge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("Failed to sync acknowledgment with backend:", err);
+    }
+  };
 
   // Dynamic Filtering Logic
   const filteredOpportunities = useMemo(() => {
@@ -177,29 +116,17 @@ export default function CompetitiveIntel() {
     });
   }, [opportunities, selectedCompetitor, selectedVulnerability, selectedPriority, searchQuery]);
 
-  // --------------------------------------------------------------------------
-  // HANDLERS
-  // --------------------------------------------------------------------------
-  const handleAcknowledge = (id, competitorName) => {
-    // BACKEND INTEGRATION POINT: Update Acknowledge Status
-    /*
-    await fetch(`/api/v1/competitor-intel/${id}/acknowledge`, { method: 'POST' });
-    */
-    setOpportunities((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, acknowledged: true } : item))
-    );
-
-    // Trigger Toast Notification
-    setToastMessage(`${competitorName} opportunity acknowledged`);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 4000);
-  };
-
+  // Derived KPI Metrics
   const criticalCount = useMemo(
     () => opportunities.filter((o) => o.priority === "Critical" && !o.acknowledged).length,
     [opportunities]
   );
+
+  const avgScore = useMemo(() => {
+    if (opportunities.length === 0) return 0;
+    const total = opportunities.reduce((acc, curr) => acc + curr.opportunityScore, 0);
+    return Math.round(total / opportunities.length);
+  }, [opportunities]);
 
   return (
     <div className="p-8 space-y-6 bg-[var(--background)] min-h-screen text-[var(--foreground)] relative">
@@ -211,6 +138,14 @@ export default function CompetitiveIntel() {
             AI-detected competitor vulnerabilities, scored and ready to act on
           </p>
         </div>
+        <button
+          onClick={fetchIntelData}
+          disabled={isLoading}
+          className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] transition-colors self-start md:self-auto"
+        >
+          <Icon icon="lucide:refresh-cw" className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
+          <span>Refresh Feed</span>
+        </button>
       </div>
 
       {/* CRITICAL ALERT BANNER */}
@@ -236,7 +171,7 @@ export default function CompetitiveIntel() {
             </span>
             <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--positive-bg)] text-[var(--positive-text)] font-medium text-[11px]">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-              Auto-refresh 30s
+              Live Sync
             </span>
           </div>
         </div>
@@ -250,7 +185,7 @@ export default function CompetitiveIntel() {
           </span>
           <div className="text-3xl font-bold">{opportunities.length}</div>
           <span className="inline-block text-xs text-[var(--positive-text)] font-semibold bg-[var(--positive-bg)] px-2 py-0.5 rounded-md">
-            ↑ 6 new today
+            Active Feed
           </span>
         </div>
 
@@ -258,7 +193,7 @@ export default function CompetitiveIntel() {
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
             Avg Opportunity Score
           </span>
-          <div className="text-3xl font-bold">71</div>
+          <div className="text-3xl font-bold">{avgScore}</div>
           <span className="text-xs text-[var(--muted-foreground)]">out of 100</span>
         </div>
 
@@ -267,15 +202,17 @@ export default function CompetitiveIntel() {
             Top Vulnerability
           </span>
           <div className="text-2xl font-bold truncate">System Outages</div>
-          <span className="text-xs text-[var(--muted-foreground)]">7 mentions this week</span>
+          <span className="text-xs text-[var(--muted-foreground)]">Primary market factor</span>
         </div>
 
         <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-1">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
-            Slack Alerts Sent
+            Acknowledged
           </span>
-          <div className="text-3xl font-bold">3</div>
-          <span className="text-xs text-[var(--muted-foreground)]">since Monday</span>
+          <div className="text-3xl font-bold">
+            {opportunities.filter((o) => o.acknowledged).length}
+          </div>
+          <span className="text-xs text-[var(--muted-foreground)]">processed by team</span>
         </div>
       </div>
 
@@ -344,13 +281,16 @@ export default function CompetitiveIntel() {
 
       {/* OPPORTUNITY CARDS LIST */}
       {isLoading ? (
-        <div className="text-center py-12 text-sm text-[var(--muted-foreground)]">Loading intelligence feed...</div>
+        <div className="text-center py-12 text-sm text-[var(--muted-foreground)] flex items-center justify-center gap-2">
+          <Icon icon="lucide:loader-2" className="w-4 h-4 animate-spin" />
+          Fetching live competitive vulnerabilities...
+        </div>
       ) : error ? (
         <div className="text-center py-12 text-sm text-rose-500">{error}</div>
       ) : filteredOpportunities.length === 0 ? (
         <div className="p-12 text-center border border-dashed border-[var(--border)] rounded-xl space-y-2">
           <p className="font-semibold text-[var(--foreground)]">No opportunities found</p>
-          <p className="text-xs text-[var(--muted-foreground)]">Try adjusting your active filters or clear search.</p>
+          <p className="text-xs text-[var(--muted-foreground)]">Try adjusting your active filters or clear search query.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -420,7 +360,6 @@ export default function CompetitiveIntel() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
-                  {/* View Details Button */}
                   <button
                     onClick={() => setSelectedOpportunityModal(item)}
                     className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] transition-colors"
@@ -429,7 +368,6 @@ export default function CompetitiveIntel() {
                     <span>View Details</span>
                   </button>
 
-                  {/* Acknowledge Button */}
                   <button
                     onClick={() => handleAcknowledge(item.id, item.competitor)}
                     disabled={item.acknowledged}
@@ -449,9 +387,7 @@ export default function CompetitiveIntel() {
         </div>
       )}
 
-      {/* ==================================================================== */}
-      {/* 1. TOAST NOTIFICATION POPUP (MATCHING SCREENSHOT image_432ae7.png)   */}
-      {/* ==================================================================== */}
+      {/* TOAST NOTIFICATION POPUP */}
       {toastMessage && (
         <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200">
           <div className="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center text-white shrink-0">
@@ -463,13 +399,10 @@ export default function CompetitiveIntel() {
         </div>
       )}
 
-      {/* ==================================================================== */}
-      {/* 2. VIEW DETAILS MODAL POPUP (MATCHING SCREENSHOT image_432b00.jpg)  */}
-      {/* ==================================================================== */}
+      {/* VIEW DETAILS MODAL POPUP */}
       {selectedOpportunityModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <div className="bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] w-full max-w-lg rounded-2xl shadow-2xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            {/* Modal Header */}
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-base font-bold text-[var(--foreground)]">
@@ -487,7 +420,6 @@ export default function CompetitiveIntel() {
               </button>
             </div>
 
-            {/* Metadata Grid (Priority, Opportunity Score, Department, Source) */}
             <div className="grid grid-cols-2 gap-4 py-2 border-y border-[var(--border)] text-xs">
               <div>
                 <span className="text-[10px] font-bold tracking-wider text-[var(--muted-foreground)] uppercase block mb-1">
@@ -534,7 +466,6 @@ export default function CompetitiveIntel() {
               </div>
             </div>
 
-            {/* Content Sections matching prototype */}
             <div className="space-y-4 text-xs">
               <div>
                 <h4 className="text-[10px] font-bold tracking-wider text-[var(--muted-foreground)] uppercase mb-1">
