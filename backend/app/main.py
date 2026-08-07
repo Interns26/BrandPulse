@@ -9,7 +9,12 @@ from app.api.articles import router as articles_router
 from app.database.session import init_db
 from app.ingestion.scheduler import start_scheduler, stop_scheduler,scheduled_competitive_ingestion_job
 from app.services.vulnerability_service import run_competitive_intelligence_job
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 1. Initialize database tables
@@ -56,10 +61,3 @@ async def health_check():
     }
 
 
-@app.post("/api/test/competitive-ingestion")
-def test_competitive_ingestion():
-    scheduled_competitive_ingestion_job()
-
-    return {
-        "message": "Competitive ingestion + intelligence job completed"
-    }
