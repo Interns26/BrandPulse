@@ -22,12 +22,9 @@ def extract_claims(brief: dict) -> list[str]:
 
     return claims
 
+def chunk_text(text: str, max_words: int = 300, overlap: int = 50):
 
-def chunk_source_text(
-    source_text: str, max_words: int = 300, overlap: int = 50
-) -> list[str]:
-
-    words = source_text.split()
+    words = text.split()
 
     if not words:
         return []
@@ -37,14 +34,13 @@ def chunk_source_text(
         for i in range(0, len(words), max_words - overlap)
     ]
 
-
 def audit_action_brief(
-    source_text: str, brief: dict, contradiction_threshold: float = 0.50
+    article_summary:str,   brief: dict, contradiction_threshold: float = 0.50
 ):
 
     claims = extract_claims(brief)
 
-    chunked_source_text = chunk_source_text(source_text)
+    chunked_summary = chunk_text(article_summary)
 
     flagged_claims = []
 
@@ -54,7 +50,7 @@ def audit_action_brief(
 
         max_contradiction_score = 0.0
 
-        for chunk in chunked_source_text:
+        for chunk in chunked_summary:
 
             output = nli_auditor(
                 chunk,

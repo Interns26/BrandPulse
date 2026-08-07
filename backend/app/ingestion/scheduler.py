@@ -47,7 +47,8 @@ def scheduled_competitive_ingestion_job():
     try:
         logger.info("Calling fetch_competitive_news_articles()...")
 
-        articles = fetch_competitive_news_articles()
+        #articles = fetch_competitive_news_articles()
+        articles = []
 
         logger.info(
             f"Competitive ingestion fetched {len(articles)} articles."
@@ -101,7 +102,7 @@ def start_scheduler():
         trigger="interval",
         minutes=sprint1_interval,
         id="rss_ingestion_job",
-        next_run_time = now,
+        #next_run_time = now,
         replace_existing=True,
     )
 

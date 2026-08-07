@@ -124,7 +124,7 @@ def generate_action_brief(
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            temperature=0.7,
+            temperature=0.2,
             max_tokens=384,
             response_format={"type": "json_object"},
         )
@@ -135,7 +135,11 @@ def generate_action_brief(
             raw_text = raw_text.replace("```json", "").replace("```", "").strip()
 
         # Parse JSON payload
-        return json.loads(raw_text)
+        result =  json.loads(raw_text)
+
+        result["article_summary"] = article_summary
+
+        return result
 
     except Exception as e:
 
@@ -146,4 +150,5 @@ def generate_action_brief(
             "recommended_action": f"Launch competitive outreach targeting active merchants using {competitors_str}.",
             "urgency": "Medium",
             "generation_error": str(e),
+            "article_summary": {article_summary}
         }

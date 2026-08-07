@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     intent_model_name: str = "MoritzLaurer/deberta-v3-base-zeroshot-v1"
 
     # Ingestion Configuration (Sprint 1)
-    rss_fetch_interval_minutes: int = 30
+    rss_fetch_interval_minutes: int = 50
     rss_user_agent: str = "desktop:com.brandpulse.app:v1.0.0 (by /u/brandpulse_dev)"
     default_rss_urls: Dict[str, str] = {}
 

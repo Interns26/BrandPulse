@@ -27,3 +27,4 @@ backend/models_storage/*
 
 output_articles.json
 ingestion_layer_with_vulnerability_pipeline_testing_output.txt
+backend/app/ai/test.py

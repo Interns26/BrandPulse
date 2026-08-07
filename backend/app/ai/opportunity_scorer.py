@@ -99,7 +99,7 @@ def calculate_urgency(published_at: datetime | str, decay_rate: float = 0.05) ->
         pub_dt = pub_dt.replace(tzinfo=timezone.utc)
 
     hours_elapsed = (now - pub_dt).total_seconds() / 3600.0
-    print(f"\n in caluclate_urgency() -> {hours_elapsed}")
+    #print(f"\n in caluclate_urgency() -> {hours_elapsed}")
     hours_elapsed = max(0.0, hours_elapsed)
 
     return round(100 * math.exp(-1 * decay_rate * hours_elapsed), 2)
