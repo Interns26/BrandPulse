@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react";
 
 export default function Sidebar() {
   return (
-    <aside className="w-64 border-r border-[var(--border)] bg-[var(--card)] p-4 flex flex-col gap-6 shrink-0 min-h-[calc(100vh-3.5rem)]">
+    <aside className="w-64 border-r border-[var(--border)] bg-[var(--card)] p-4 flex flex-col gap-6 shrink-0 min-h-[calc(100vh-3.5rem)] overflow-y-auto">
       {/* Live Monitoring Badge */}
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--positive-bg)] text-[var(--positive-text)] text-xs font-semibold w-fit">
         <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />

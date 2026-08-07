@@ -402,25 +402,25 @@ export default function Dashboard() {
   }, [timelineData, theme]);
 
   return (
-    <div className="p-8 space-y-8 bg-[var(--background)] min-h-screen text-[var(--foreground)] transition-colors duration-200">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8 bg-[var(--background)] min-h-screen text-[var(--foreground)] transition-colors duration-200 overflow-x-hidden w-full max-w-full">
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {/* Total Posts */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
+        <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
             Total Posts Analyzed
           </div>
-          <div className="text-3xl font-bold tracking-tight text-[var(--foreground)]">
+          <div className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--foreground)]">
             {stats.total.toLocaleString()}
           </div>
         </div>
 
         {/* Positive Sentiment */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
+        <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
             Positive Sentiment
           </div>
-          <div className="text-3xl font-bold tracking-tight text-[var(--positive-text)]">
+          <div className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--positive-text)]">
             {stats.positivePct}%
           </div>
           <div className="text-sm text-[var(--muted-foreground)]">
@@ -429,11 +429,11 @@ export default function Dashboard() {
         </div>
 
         {/* Negative Sentiment */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
+        <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
             Negative Sentiment
           </div>
-          <div className="text-3xl font-bold tracking-tight text-[var(--negative-text)]">
+          <div className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--negative-text)]">
             {stats.negativePct}%
           </div>
           <div className="text-sm text-[var(--muted-foreground)]">
@@ -442,11 +442,11 @@ export default function Dashboard() {
         </div>
 
         {/* Neutral Sentiment */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
+        <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex flex-col justify-between space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
             Neutral Sentiment
           </div>
-          <div className="text-3xl font-bold tracking-tight text-[var(--neutral-text)]">
+          <div className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--neutral-text)]">
             {stats.neutralPct}%
           </div>
           <div className="text-sm text-[var(--muted-foreground)]">
@@ -456,13 +456,13 @@ export default function Dashboard() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Sentiment Distribution */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
+        <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
           <h3 className="text-base font-bold text-[var(--foreground)]">
             Sentiment Distribution
           </h3>
-          <div className="h-72 relative">
+          <div className="h-64 md:h-72 relative">
             <Doughnut
               key={theme}
               redraw={true}
@@ -482,11 +482,11 @@ export default function Dashboard() {
         </div>
 
         {/* Intent Breakdown */}
-        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
+        <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
           <h3 className="text-base font-bold text-[var(--foreground)]">
             Intent Breakdown
           </h3>
-          <div className="h-72 relative">
+          <div className="h-64 md:h-72 relative">
             <Bar
               data={intentChartData}
               options={{
@@ -513,11 +513,11 @@ export default function Dashboard() {
       </div>
 
       {/* Sentiment Timeline Chart */}
-      <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
+      <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4">
         <h3 className="text-base font-bold text-[var(--foreground)]">
           Sentiment Timeline (Last 7 Days)
         </h3>
-        <div className="h-80 relative">
+        <div className="h-64 md:h-80 relative">
           <Line
             data={timelineChartData}
             options={{
@@ -549,8 +549,8 @@ export default function Dashboard() {
       </div>
 
       {/* Filter and Source Management Section */}
-      <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="p-4 md:p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <h2 className="text-lg font-bold text-[var(--foreground)]">
             Posts Feed & Filters
           </h2>
@@ -559,7 +559,7 @@ export default function Dashboard() {
               resetModalForm();
               setIsModalOpen(true);
             }}
-            className="px-4 py-2 bg-[var(--accent)] text-[var(--primary-foreground)] font-medium rounded-lg text-sm flex items-center gap-2 transition-transform active:scale-95 cursor-pointer hover:opacity-90"
+            className="px-4 py-2 bg-[var(--accent)] text-[var(--primary-foreground)] font-medium rounded-lg text-sm flex items-center gap-2 transition-transform active:scale-95 cursor-pointer hover:opacity-90 whitespace-nowrap"
           >
             <Icon icon="lucide:plus" className="w-4 h-4" />
             <span>Add Source</span>
@@ -567,7 +567,7 @@ export default function Dashboard() {
         </div>
 
         {/* Filters Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {/* Subreddit / Source Filter */}
           <div>
             <label className="block text-xs font-semibold text-[var(--muted-foreground)] mb-2">
@@ -643,103 +643,105 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Posts Table */}
+        {/* Posts Table - Fixed overflow */}
         <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-[var(--muted)] border-b border-[var(--border)] text-xs uppercase font-semibold text-[var(--muted-foreground)]">
-              <tr>
-                <th className="p-3.5">Timestamp</th>
-                <th className="p-3.5">Source</th>
-                <th className="p-3.5">Author</th>
-                <th className="p-3.5">Content</th>
-                <th className="p-3.5">Sentiment</th>
-                <th className="p-3.5">Intent</th>
-                <th className="p-3.5">Priority</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)] text-sm">
-              {isLoading ? (
+          <div className="min-w-[768px]">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-[var(--muted)] border-b border-[var(--border)] text-xs uppercase font-semibold text-[var(--muted-foreground)]">
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="p-6 text-center text-[var(--muted-foreground)]"
-                  >
-                    Loading posts...
-                  </td>
+                  <th className="p-3.5">Timestamp</th>
+                  <th className="p-3.5">Source</th>
+                  <th className="p-3.5">Author</th>
+                  <th className="p-3.5">Content</th>
+                  <th className="p-3.5">Sentiment</th>
+                  <th className="p-3.5">Intent</th>
+                  <th className="p-3.5">Priority</th>
                 </tr>
-              ) : posts.length > 0 ? (
-                posts.map((post) => (
-                  <tr
-                    key={post.id}
-                    onClick={() =>
-                      post.url &&
-                      window.open(post.url, "_blank", "noopener,noreferrer")
-                    }
-                    className="hover:bg-[var(--muted)]/50 transition-colors cursor-pointer"
-                  >
-                    <td className="p-3.5 text-[var(--muted-foreground)]">
-                      {getRelativeTime(post.fetched_at)}
-                    </td>
-                    <td className="p-3.5 font-semibold text-[var(--foreground)]">
-                      {formatSourceName(post.source_name)}
-                    </td>
-                    <td className="p-3.5 text-[var(--foreground)]">
-                      {post.author || "Anonymous"}
-                    </td>
-                    <td className="p-3.5 text-[var(--muted-foreground)] max-w-xs truncate">
-                      {post.content && post.content.trim() !== ""
-                        ? post.content
-                        : post.title}
-                    </td>
-                    <td className="p-3.5">
-                      <span
-                        className={`inline-block px-2.5 py-1 rounded-md text-xs font-semibold capitalize ${
-                          post.sentiment === "positive"
-                            ? "bg-[var(--positive-bg)] text-[var(--positive-text)]"
-                            : post.sentiment === "negative"
-                              ? "bg-[var(--negative-bg)] text-[var(--negative-text)]"
-                              : "bg-[var(--neutral-bg)] text-[var(--neutral-text)]"
-                        }`}
-                      >
-                        {post.sentiment || "neutral"}
-                      </span>
-                    </td>
-                    <td className="p-3.5">
-                      <span className="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--neutral-bg)] text-[var(--neutral-text)]">
-                        {post.intent_category || "General"}
-                      </span>
-                    </td>
-                    <td className="p-3.5">
-                      <span
-                        className={`inline-block px-2.5 py-1 rounded-md text-xs font-semibold ${
-                          post.priority === "High"
-                            ? "bg-[var(--negative-bg)] text-[var(--negative-text)]"
-                            : post.priority === "Medium"
-                              ? "bg-[var(--medium-bg,#fef3c7)] text-[var(--medium-text,#b45309)]"
-                              : "bg-[var(--positive-bg)] text-[var(--positive-text)]"
-                        }`}
-                      >
-                        {post.priority || "Low"}
-                      </span>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)] text-sm">
+                {isLoading ? (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className="p-6 text-center text-[var(--muted-foreground)]"
+                    >
+                      Loading posts...
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="p-6 text-center text-[var(--muted-foreground)]"
-                  >
-                    No posts matched the current filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ) : posts.length > 0 ? (
+                  posts.map((post) => (
+                    <tr
+                      key={post.id}
+                      onClick={() =>
+                        post.url &&
+                        window.open(post.url, "_blank", "noopener,noreferrer")
+                      }
+                      className="hover:bg-[var(--muted)]/50 transition-colors cursor-pointer"
+                    >
+                      <td className="p-3.5 text-[var(--muted-foreground)] whitespace-nowrap">
+                        {getRelativeTime(post.fetched_at)}
+                      </td>
+                      <td className="p-3.5 font-semibold text-[var(--foreground)] whitespace-nowrap">
+                        {formatSourceName(post.source_name)}
+                      </td>
+                      <td className="p-3.5 text-[var(--foreground)] whitespace-nowrap">
+                        {post.author || "Anonymous"}
+                      </td>
+                      <td className="p-3.5 text-[var(--muted-foreground)] max-w-xs truncate">
+                        {post.content && post.content.trim() !== ""
+                          ? post.content
+                          : post.title}
+                      </td>
+                      <td className="p-3.5 whitespace-nowrap">
+                        <span
+                          className={`inline-block px-2.5 py-1 rounded-md text-xs font-semibold capitalize ${
+                            post.sentiment === "positive"
+                              ? "bg-[var(--positive-bg)] text-[var(--positive-text)]"
+                              : post.sentiment === "negative"
+                                ? "bg-[var(--negative-bg)] text-[var(--negative-text)]"
+                                : "bg-[var(--neutral-bg)] text-[var(--neutral-text)]"
+                          }`}
+                        >
+                          {post.sentiment || "neutral"}
+                        </span>
+                      </td>
+                      <td className="p-3.5 whitespace-nowrap">
+                        <span className="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--neutral-bg)] text-[var(--neutral-text)]">
+                          {post.intent_category || "General"}
+                        </span>
+                      </td>
+                      <td className="p-3.5 whitespace-nowrap">
+                        <span
+                          className={`inline-block px-2.5 py-1 rounded-md text-xs font-semibold ${
+                            post.priority === "High"
+                              ? "bg-[var(--negative-bg)] text-[var(--negative-text)]"
+                              : post.priority === "Medium"
+                                ? "bg-[var(--medium-bg,#fef3c7)] text-[var(--medium-text,#b45309)]"
+                                : "bg-[var(--positive-bg)] text-[var(--positive-text)]"
+                          }`}
+                        >
+                          {post.priority || "Low"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className="p-6 text-center text-[var(--muted-foreground)]"
+                    >
+                      No posts matched the current filters.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-center gap-2 pt-2">
+        <div className="flex items-center justify-center gap-2 pt-2 flex-wrap">
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -748,7 +750,7 @@ export default function Dashboard() {
             <Icon icon="lucide:chevron-left" className="w-4 h-4" />
           </button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
@@ -761,6 +763,22 @@ export default function Dashboard() {
               {page}
             </button>
           ))}
+
+          {totalPages > 7 && (
+            <>
+              <span className="text-[var(--muted-foreground)]">...</span>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                className={`w-8 h-8 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
+                  currentPage === totalPages
+                    ? "bg-[var(--accent)] border-[var(--accent)] text-[var(--primary-foreground)]"
+                    : "border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--muted)]"
+                }`}
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
 
           <button
             disabled={currentPage === totalPages}
