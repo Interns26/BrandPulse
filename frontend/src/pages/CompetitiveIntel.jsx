@@ -709,8 +709,7 @@ export default function CompetitiveIntel() {
                       className="w-4 h-4 shrink-0"
                     />
                     <span>
-                      Audit Passed — All claims supported by source article
-                      context.
+                      Audit Passed — Vulnerability Summary supported by source article.
                     </span>
                   </div>
                 ) : (

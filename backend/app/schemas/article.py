@@ -5,13 +5,15 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ArticleResponse(BaseModel):
-    id: UUID
+    id: str
     title: str
     content: str
     url: str
     source_name: str
-    published_at: datetime
-    matched_competitors: list = []
-    matched_contexts: list = []
+    published_at: str | None = None
+    matched_competitors: list[str] = []
+    matched_contexts: list[str] = []
+    vulnerability_processed: bool
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True

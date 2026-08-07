@@ -16,7 +16,6 @@ export default function RawDataPipeline() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Table Interaction State
-  const [expandedRowId, setExpandedRowId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
@@ -32,35 +31,42 @@ export default function RawDataPipeline() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      const rawArticles = Array.isArray(data) ? data : data.articles || [];
+      const rawArticles = Array.isArray(data) ? data : [];
 
       // Map backend Article schema to UI model
-      const normalizedData = rawArticles.map((item) => ({
-        id: item.id || `raw-${Math.random().toString(36).substr(2, 9)}`,
-        title: item.title || "Untitled Ingestion Record",
-        source: item.source_name || item.source || "RSS Feed",
-        published: item.published_at
-          ? new Date(item.published_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : item.published || "Recently",
-        matchedEntity: item.matched_entity || item.matchedEntity || item.competitor || "—",
-        matchedContext: item.matched_context || item.matchedContext || "—",
-        preFilterStatus:
-          item.pre_filter_status ||
-          item.preFilterStatus ||
-          (item.matched_entity || item.competitor ? "Pass" : "Fail"),
-        failureReason:
-          item.failure_reason ||
-          item.failureReason ||
-          (item.matched_entity ? null : "No target competitor entity detected."),
-        rawUrl: item.url || item.rawUrl || "#",
-        contentSnippet: item.content || item.contentSnippet || "No snippet available.",
-        rawJson: item.raw_json || item.rawJson || {
-          feed_id: item.source_name || "rss_feed",
-          word_count: item.content ? item.content.split(" ").length : 0,
-          published_at: item.published_at,
-          url: item.url,
-        },
-      }));
+      const normalizedData = rawArticles.map((item) => {
+        const isPass = Boolean(item.vulnerability_processed);
+        const hasCompetitors =
+          Array.isArray(item.matched_competitors) &&
+          item.matched_competitors.length > 0;
+        const hasContexts =
+          Array.isArray(item.matched_contexts) &&
+          item.matched_contexts.length > 0;
+
+        return {
+          id: item.id || `raw-${Math.random().toString(36).substring(2, 9)}`,
+          title: item.title || "Untitled Ingestion Record",
+          source: item.source_name || "RSS Feed",
+          published: item.published_at
+            ? new Date(item.published_at).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "Recently",
+          matchedEntity: hasCompetitors
+            ? item.matched_competitors.join(", ")
+            : "—",
+          matchedContext: hasContexts ? item.matched_contexts.join(", ") : "—",
+          preFilterStatus: isPass ? "Pass" : "Fail",
+          failureReason: isPass
+            ? null
+            : "Filtered out before AI vulnerability processing.",
+          rawUrl: item.url || "#",
+          contentSnippet: item.content || "No snippet available.",
+          rawJson: item,
+        };
+      });
 
       setArticles(normalizedData);
     } catch (err) {
@@ -101,28 +107,44 @@ export default function RawDataPipeline() {
   // --------------------------------------------------------------------------
   const filteredArticles = useMemo(() => {
     return articles.filter((item) => {
-      if (selectedSource !== "All Sources" && item.source !== selectedSource) return false;
-      if (selectedStatus !== "All" && item.preFilterStatus !== selectedStatus) return false;
+      if (selectedSource !== "All Sources" && item.source !== selectedSource)
+        return false;
+      if (selectedStatus !== "All" && item.preFilterStatus !== selectedStatus)
+        return false;
       if (searchQuery.trim() !== "") {
         const query = searchQuery.toLowerCase();
         const matchesTitle = item.title.toLowerCase().includes(query);
         const matchesEntity = item.matchedEntity.toLowerCase().includes(query);
-        const matchesContext = item.matchedContext.toLowerCase().includes(query);
+        const matchesContext = item.matchedContext
+          .toLowerCase()
+          .includes(query);
         const matchesSource = item.source.toLowerCase().includes(query);
-        if (!matchesTitle && !matchesEntity && !matchesContext && !matchesSource) return false;
+        if (
+          !matchesTitle &&
+          !matchesEntity &&
+          !matchesContext &&
+          !matchesSource
+        )
+          return false;
       }
       return true;
     });
   }, [articles, selectedSource, selectedStatus, searchQuery]);
 
-  // Derived Metrics
+  // --------------------------------------------------------------------------
+  // DYNAMICALLY DERIVED METRICS
+  // --------------------------------------------------------------------------
+  const totalArticlesCount = articles.length;
   const passCount = useMemo(
     () => articles.filter((a) => a.preFilterStatus === "Pass").length,
     [articles]
   );
   const passRate = useMemo(
-    () => (articles.length ? Math.round((passCount / articles.length) * 100) : 0),
-    [articles, passCount]
+    () =>
+      totalArticlesCount > 0
+        ? Math.round((passCount / totalArticlesCount) * 100)
+        : 0,
+    [passCount, totalArticlesCount]
   );
 
   // Pagination Math
@@ -132,8 +154,10 @@ export default function RawDataPipeline() {
     return filteredArticles.slice(startIdx, startIdx + itemsPerPage);
   }, [filteredArticles, currentPage, itemsPerPage]);
 
-  const toggleRowExpand = (id) => {
-    setExpandedRowId((prev) => (prev === id ? null : id));
+  const handleRowClick = (url) => {
+    if (url && url !== "#") {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
   };
 
   return (
@@ -141,7 +165,9 @@ export default function RawDataPipeline() {
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Raw Data Pipeline Monitor</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Raw Data Pipeline Monitor
+          </h1>
           <p className="text-sm text-[var(--muted-foreground)]">
             Transparency into articles fetched before they reach the AI pipeline
           </p>
@@ -154,10 +180,10 @@ export default function RawDataPipeline() {
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
             ARTICLES FETCHED
           </span>
-          <div className="text-3xl font-bold">{articles.length}</div>
+          <div className="text-3xl font-bold">{totalArticlesCount}</div>
           <div>
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-              ↑ Google News + RSS
+              ↑ Google News + TechCrunch POS
             </span>
           </div>
         </div>
@@ -166,16 +192,22 @@ export default function RawDataPipeline() {
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
             PRE-FILTER PASS RATE
           </span>
-          <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{passRate}%</div>
-          <div className="text-xs text-[var(--muted-foreground)]">{passCount} of {articles.length} passed</div>
+          <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+            {passRate}%
+          </div>
+          <div className="text-xs text-[var(--muted-foreground)]">
+            {passCount} of {totalArticlesCount} passed
+          </div>
         </div>
 
         <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-2">
           <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--muted-foreground)]">
-            SENT TO AI PIPELINE
+            SENT TO VULNERABILITY PIPELINE
           </span>
           <div className="text-3xl font-bold">{passCount}</div>
-          <div className="text-xs text-[var(--muted-foreground)]">processed by vulnerability classifier</div>
+          <div className="text-xs text-[var(--muted-foreground)]">
+            processed by vulnerability classifier
+          </div>
         </div>
 
         <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-2">
@@ -183,14 +215,18 @@ export default function RawDataPipeline() {
             LAST FETCH CYCLE
           </span>
           <div className="text-3xl font-bold">Active</div>
-          <div className="text-xs text-[var(--muted-foreground)]">runs every 30 min</div>
+          <div className="text-xs text-[var(--muted-foreground)]">
+            runs every 30 min
+          </div>
         </div>
       </div>
 
       {/* MAIN MONITOR TABLE CONTAINER */}
       <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h2 className="text-base font-bold text-[var(--foreground)]">Raw RSS Data Pipeline Monitor</h2>
+          <h2 className="text-base font-bold text-[var(--foreground)]">
+            Raw RSS Data Pipeline Monitor
+          </h2>
           <button
             onClick={handleTriggerFetchCycle}
             disabled={isFetching}
@@ -228,7 +264,7 @@ export default function RawDataPipeline() {
 
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase">
-              Pre-filter Status
+              Filter Status
             </label>
             <select
               value={selectedStatus}
@@ -278,39 +314,34 @@ export default function RawDataPipeline() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[var(--border)] text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
-                  <th className="py-3 px-2 w-8"></th>
                   <th className="py-3 px-4">TITLE</th>
                   <th className="py-3 px-4">SOURCE</th>
                   <th className="py-3 px-4">PUBLISHED</th>
-                  <th className="py-3 px-4">MATCHED ENTITY</th>
+                  <th className="py-3 px-4">MATCHED RIVALS</th>
                   <th className="py-3 px-4">MATCHED CONTEXT</th>
-                  <th className="py-3 px-4 text-right">PRE-FILTER</th>
+                  <th className="py-3 px-4 text-right">FILTER STATUS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-xs">
                 {paginatedArticles.map((row) => {
-                  const isExpanded = expandedRowId === row.id;
                   const isPass = row.preFilterStatus === "Pass";
 
                   return (
-                    <tr key={row.id} className="group hover:bg-[var(--muted)]/40 transition-colors">
-                      <td className="py-4 px-2">
-                        <button
-                          onClick={() => toggleRowExpand(row.id)}
-                          className="p-1 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
-                        >
-                          <Icon
-                            icon="lucide:chevron-right"
-                            className={`w-4 h-4 transition-transform duration-200 ${
-                              isExpanded ? "rotate-90" : ""
-                            }`}
-                          />
-                        </button>
-                      </td>
-
+                    <tr
+                      key={row.id}
+                      onClick={() => handleRowClick(row.rawUrl)}
+                      className="group hover:bg-[var(--muted)]/40 transition-colors cursor-pointer"
+                    >
                       <td className="py-4 px-4 font-semibold text-[var(--foreground)] max-w-xs md:max-w-md">
-                        <div className="truncate" title={row.title}>
-                          {row.title}
+                        <div
+                          className="truncate flex items-center gap-1.5"
+                          title={row.title}
+                        >
+                          <span>{row.title}</span>
+                          <Icon
+                            icon="lucide:external-link"
+                            className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--muted-foreground)] shrink-0"
+                          />
                         </div>
                       </td>
 
@@ -346,48 +377,6 @@ export default function RawDataPipeline() {
                 })}
               </tbody>
             </table>
-          </div>
-        )}
-
-        {/* EXPANDABLE DETAIL DRAWER */}
-        {expandedRowId && (
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 text-xs space-y-3 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[var(--foreground)]">
-                Raw Ingestion Snippet Details
-              </span>
-              <button
-                onClick={() => setExpandedRowId(null)}
-                className="text-[11px] text-[var(--muted-foreground)] hover:underline"
-              >
-                Close details
-              </button>
-            </div>
-            {(() => {
-              const activeRow = articles.find((a) => a.id === expandedRowId);
-              if (!activeRow) return null;
-              return (
-                <div className="space-y-2">
-                  <p className="text-[var(--muted-foreground)] leading-relaxed">
-                    <strong className="text-[var(--foreground)]">Snippet:</strong>{" "}
-                    {activeRow.contentSnippet}
-                  </p>
-                  {activeRow.failureReason && (
-                    <p className="text-rose-500 font-medium">
-                      <strong>Filter Rejection Reason:</strong> {activeRow.failureReason}
-                    </p>
-                  )}
-                  <div className="pt-2">
-                    <span className="text-[10px] font-bold uppercase text-[var(--muted-foreground)] block mb-1">
-                      Raw Data Payload
-                    </span>
-                    <pre className="p-3 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[11px] text-[var(--muted-foreground)] overflow-x-auto font-mono">
-                      {JSON.stringify(activeRow.rawJson, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              );
-            })()}
           </div>
         )}
 

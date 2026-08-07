@@ -53,9 +53,9 @@ export default function Sidebar() {
               <Icon icon="lucide:disc" className="w-5 h-5" />
               <span>Competitive Intel</span>
             </div>
-            <span className="bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            {/* <span className="bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
               2
-            </span>
+            </span> */}
           </NavLink>
 
           <NavLink
