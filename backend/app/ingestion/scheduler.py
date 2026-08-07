@@ -6,6 +6,7 @@ from app.ingestion.rss_fetcher import run_ingestion_pipeline
 from app.ingestion.news_fetcher import fetch_competitive_news_articles
 from app.services.article_service import save_article
 from app.services.vulnerability_service import run_competitive_intelligence_job
+from datetime import datetime, timezone
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
@@ -84,22 +85,27 @@ def start_scheduler():
 
     sprint1_interval = settings.rss_fetch_interval_minutes
     sprint2_interval = settings.competitive_fetch_interval_minutes
-
-    scheduler.add_job(
-        scheduled_ingestion_job,
-        trigger="interval",
-        minutes=sprint1_interval,
-        id="rss_ingestion_job",
-        replace_existing=True,
-    )
+    now = datetime.now(timezone.utc)
 
     scheduler.add_job(
         scheduled_competitive_ingestion_job,
         trigger="interval",
         minutes=sprint2_interval,
         id="competitive_intel_job",
+        next_run_time = now,
         replace_existing=True,
     )
+
+    scheduler.add_job(
+        scheduled_ingestion_job,
+        trigger="interval",
+        minutes=sprint1_interval,
+        id="rss_ingestion_job",
+        next_run_time = now,
+        replace_existing=True,
+    )
+
+   
 
     scheduler.start()
 
