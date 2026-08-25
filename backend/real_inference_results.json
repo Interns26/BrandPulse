@@ -1,0 +1,653 @@
+[
+    {
+        "article_metadata": {
+            "article_id": "9a8ecebd-b2fb-4d16-8bca-b1731d520a96",
+            "title": "Streamline your checkout with 15% off Square POS hardware at Best Buy - TechRadar",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Data Breaches",
+            "published_at_utc": "2026-05-19T15:02:30+00:00",
+            "extracted_age_hours": 2349.61
+        },
+        "ml_features_extracted": {
+            "severity": 90.0,
+            "urgency": 0.7483731318142013,
+            "volume": 50.0,
+            "confidence_score": 33.33,
+            "opportunity_score": 58.5,
+            "article_age": 2349.6114105844445,
+            "vulnerability_type": "Data Breaches"
+        },
+        "campaign_decision": {
+            "strategy": "COMPETITOR_SWITCHING",
+            "channel": "LINKEDIN_EMAIL",
+            "content_type": "COMPARISON_GUIDE",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4294,
+                "channel_confidence": 0.6036,
+                "content_type_confidence": 0.515
+            },
+            "overall_confidence": 0.516
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "e56f133d-3dd6-4139-8138-6965da0d2f84",
+            "title": "Square\u2019s Latest Deals Show Its POS Directions As It Seeks More Merchants - Digital Transactions",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Layoffs",
+            "published_at_utc": "2026-03-19T07:00:00+00:00",
+            "extracted_age_hours": 3821.65
+        },
+        "ml_features_extracted": {
+            "severity": 65.0,
+            "urgency": 0.03485331109183214,
+            "volume": 50.0,
+            "confidence_score": 75.4,
+            "opportunity_score": 48.5,
+            "article_age": 3821.653114784722,
+            "vulnerability_type": "Layoffs"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "CONTENT_MARKETING",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.6211,
+                "channel_confidence": 0.4984,
+                "content_type_confidence": 0.7961
+            },
+            "overall_confidence": 0.6385
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "e27ecdbd-6603-468c-a8b8-3b8dff574459",
+            "title": "The Best Bakery and Coffee Shop POS Systems: 8 Must-Have Features - Toast",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2026-01-09T08:00:00+00:00",
+            "extracted_age_hours": 5476.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 0.001108747973205427,
+            "volume": 50.0,
+            "confidence_score": 45.07,
+            "opportunity_score": 43.0,
+            "article_age": 5476.653138398334,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "e0ab117b-fe61-4f0d-8444-39906ac91385",
+            "title": "SumUp\u2019s valuation falls as low as $4.1B, as Groupon and others sell off their stakes",
+            "source": "techcrunch_pos",
+            "competitors": [],
+            "vulnerability_type": "System Outages",
+            "published_at_utc": "2023-10-10T22:29:25+00:00",
+            "extracted_age_hours": 25190.16
+        },
+        "ml_features_extracted": {
+            "severity": 95.0,
+            "urgency": 1.6159954401289888e-21,
+            "volume": 100.0,
+            "confidence_score": 19.58,
+            "opportunity_score": 68.0,
+            "article_age": 25190.16288022583,
+            "vulnerability_type": "System Outages"
+        },
+        "campaign_decision": {
+            "strategy": "COMPETITOR_SWITCHING",
+            "channel": "LINKEDIN_EMAIL",
+            "content_type": "COMPARISON_GUIDE",
+            "confidence_metrics": {
+                "strategy_confidence": 0.5155,
+                "channel_confidence": 0.6903,
+                "content_type_confidence": 0.5238
+            },
+            "overall_confidence": 0.5765
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "7f456aaa-f654-4578-9c55-fb2807e3b9eb",
+            "title": "As startups whip up a restaurant tech frenzy, is anyone close to Toast?",
+            "source": "techcrunch_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2022-09-09T17:00:45+00:00",
+            "extracted_age_hours": 34699.64
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 4.022102872747799e-30,
+            "volume": 100.0,
+            "confidence_score": 30.68,
+            "opportunity_score": 58.0,
+            "article_age": 34699.64069149222,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "CONTENT_MARKETING",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4354,
+                "channel_confidence": 0.4145,
+                "content_type_confidence": 0.3317
+            },
+            "overall_confidence": 0.3939
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "d9874f55-f8bf-4981-9a02-3459a76ab8ed",
+            "title": "Best POS System for Small Businesses in 2026 - Toast",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Price Increases",
+            "published_at_utc": "2026-04-07T07:00:00+00:00",
+            "extracted_age_hours": 3365.65
+        },
+        "ml_features_extracted": {
+            "severity": 80.0,
+            "urgency": 0.09012052213947194,
+            "volume": 50.0,
+            "confidence_score": 25.64,
+            "opportunity_score": 47.0,
+            "article_age": 3365.6532266872223,
+            "vulnerability_type": "Price Increases"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.2971,
+                "channel_confidence": 0.5384,
+                "content_type_confidence": 0.2664
+            },
+            "overall_confidence": 0.3673
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "e667acd0-f627-4cfa-9ee9-1f067873995c",
+            "title": "Clover POS Reviews: What Restaurant Owners Are Saying in 2026 - Toast",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Price Increases",
+            "published_at_utc": "2026-04-07T07:00:00+00:00",
+            "extracted_age_hours": 3365.65
+        },
+        "ml_features_extracted": {
+            "severity": 80.0,
+            "urgency": 0.0901205185882645,
+            "volume": 50.0,
+            "confidence_score": 68.73,
+            "opportunity_score": 47.0,
+            "article_age": 3365.6532456016666,
+            "vulnerability_type": "Price Increases"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.2971,
+                "channel_confidence": 0.5384,
+                "content_type_confidence": 0.2664
+            },
+            "overall_confidence": 0.3673
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "61f9abc2-8b48-4b98-951b-1b4bba0a18d8",
+            "title": "Zeller launches POS app to challenge Square in Australia - CFOtech Australia",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Price Increases",
+            "published_at_utc": "2026-06-24T07:00:00+00:00",
+            "extracted_age_hours": 1493.65
+        },
+        "ml_features_extracted": {
+            "severity": 80.0,
+            "urgency": 4.452174151020548,
+            "volume": 50.0,
+            "confidence_score": 24.25,
+            "opportunity_score": 54.5,
+            "article_age": 1493.6532652127778,
+            "vulnerability_type": "Price Increases"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.2971,
+                "channel_confidence": 0.5384,
+                "content_type_confidence": 0.2664
+            },
+            "overall_confidence": 0.3673
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "f4330e09-984d-43bf-8c74-dd12be034bb3",
+            "title": "Best Square Point of Sale Competitors and Alternatives (2026) - Toast",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Price Increases",
+            "published_at_utc": "2026-02-25T08:00:00+00:00",
+            "extracted_age_hours": 4348.65
+        },
+        "ml_features_extracted": {
+            "severity": 80.0,
+            "urgency": 0.0116258506358247,
+            "volume": 50.0,
+            "confidence_score": 29.4,
+            "opportunity_score": 47.0,
+            "article_age": 4348.653284735833,
+            "vulnerability_type": "Price Increases"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.2971,
+                "channel_confidence": 0.5384,
+                "content_type_confidence": 0.2664
+            },
+            "overall_confidence": 0.3673
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "2953fd46-2b58-41bb-88ba-65fda1dfa9ce",
+            "title": "Square Restaurant POS Reviews (2026) - Toast",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2026-02-25T08:00:00+00:00",
+            "extracted_age_hours": 4348.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 0.011625850204221735,
+            "volume": 50.0,
+            "confidence_score": 25.08,
+            "opportunity_score": 43.0,
+            "article_age": 4348.6533025555555,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "3756b8ee-2500-4601-bc67-472cc8c4a1d2",
+            "title": "Square Launches Unified Point of Sale App to Power Personalized, Scalable Business Growth - Block",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Data Breaches",
+            "published_at_utc": "2025-04-24T07:00:00+00:00",
+            "extracted_age_hours": 11717.65
+        },
+        "ml_features_extracted": {
+            "severity": 90.0,
+            "urgency": 2.5009190064850077e-09,
+            "volume": 50.0,
+            "confidence_score": 34.09,
+            "opportunity_score": 66.0,
+            "article_age": 11717.6533228875,
+            "vulnerability_type": "Data Breaches"
+        },
+        "campaign_decision": {
+            "strategy": "COMPETITOR_SWITCHING",
+            "channel": "LINKEDIN_EMAIL",
+            "content_type": "COMPARISON_GUIDE",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4294,
+                "channel_confidence": 0.6136,
+                "content_type_confidence": 0.515
+            },
+            "overall_confidence": 0.5193
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "8408ff76-30d2-4dba-a2ad-10226faac0ee",
+            "title": "Square Launches Customizable Unified POS App - PYMNTS.com",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2025-04-24T07:00:00+00:00",
+            "extracted_age_hours": 11717.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 2.500918902660687e-09,
+            "volume": 50.0,
+            "confidence_score": 26.23,
+            "opportunity_score": 50.5,
+            "article_age": 11717.653342814443,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "74bcba75-7af6-42e9-81c7-831b51feb254",
+            "title": "Square Aims to Move Upmarket with Handheld POS Device - PaymentsJournal",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2025-05-13T07:00:00+00:00",
+            "extracted_age_hours": 11261.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 6.466649920778224e-09,
+            "volume": 50.0,
+            "confidence_score": 22.61,
+            "opportunity_score": 50.5,
+            "article_age": 11261.65336085139,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "06b92653-b80a-439e-9a5d-2aa9a2d805b3",
+            "title": "Clover, Square, And Epos Now Top a Javelin Ranking of POS Systems for Small Businesses - Digital Transactions",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2025-02-14T08:00:00+00:00",
+            "extracted_age_hours": 13372.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 7.955883088449806e-11,
+            "volume": 50.0,
+            "confidence_score": 26.09,
+            "opportunity_score": 50.5,
+            "article_age": 13372.653380545833,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "c913c99c-79ad-4137-b425-500f47027819",
+            "title": "Square Unveils New Handheld POS and Restaurant Platform to Power Growth and Hospitality - Block",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Layoffs",
+            "published_at_utc": "2025-05-13T07:00:00+00:00",
+            "extracted_age_hours": 11261.65
+        },
+        "ml_features_extracted": {
+            "severity": 65.0,
+            "urgency": 6.4666493931811945e-09,
+            "volume": 50.0,
+            "confidence_score": 22.85,
+            "opportunity_score": 56.0,
+            "article_age": 11261.653400013332,
+            "vulnerability_type": "Layoffs"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "CONTENT_MARKETING",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.6211,
+                "channel_confidence": 0.4984,
+                "content_type_confidence": 0.7961
+            },
+            "overall_confidence": 0.6385
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "a58657ec-c6c7-4490-a5df-9399c3b0b60d",
+            "title": "The Best Bakery POS Systems: 8 Must-Have Features (2026) - Toast",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2025-12-24T08:00:00+00:00",
+            "extracted_age_hours": 5860.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 0.0004981922772436271,
+            "volume": 50.0,
+            "confidence_score": 35.31,
+            "opportunity_score": 43.0,
+            "article_age": 5860.653428429722,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "033a1d6d-13d7-4167-a525-d1bf9aa35db8",
+            "title": "Square launches handheld POS device with barcode scanner, camera, and touchscreen display - TechRadar",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2025-05-14T07:00:00+00:00",
+            "extracted_age_hours": 11237.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 6.798200885113114e-09,
+            "volume": 50.0,
+            "confidence_score": 20.89,
+            "opportunity_score": 50.5,
+            "article_age": 11237.653450309166,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "1759cb56-bad2-4670-a694-a7d97408b28c",
+            "title": "Square introduces the Square Handheld, a multipurpose card reader that fits in your back pocket - Fast Company",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "System Outages",
+            "published_at_utc": "2025-05-13T07:00:00+00:00",
+            "extracted_age_hours": 11261.65
+        },
+        "ml_features_extracted": {
+            "severity": 95.0,
+            "urgency": 6.466648472158993e-09,
+            "volume": 50.0,
+            "confidence_score": 32.15,
+            "opportunity_score": 68.0,
+            "article_age": 11261.653468378056,
+            "vulnerability_type": "System Outages"
+        },
+        "campaign_decision": {
+            "strategy": "COMPETITOR_SWITCHING",
+            "channel": "LINKEDIN_EMAIL",
+            "content_type": "COMPARISON_GUIDE",
+            "confidence_metrics": {
+                "strategy_confidence": 0.5445,
+                "channel_confidence": 0.6381,
+                "content_type_confidence": 0.525
+            },
+            "overall_confidence": 0.5692
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "9da7b7f7-e266-4a89-81ad-85b4e132c45e",
+            "title": "WooCommerce Selects Square as Preferred POS Partner to Power Global Omnichannel Commerce - Block",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2025-05-13T07:00:00+00:00",
+            "extracted_age_hours": 11261.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 6.466648215715947e-09,
+            "volume": 50.0,
+            "confidence_score": 22.33,
+            "opportunity_score": 58.0,
+            "article_age": 11261.653487413056,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "ea59fa59-f641-4d6e-880b-edfb67e2dd62",
+            "title": "Embed | announces integration with Square POS - blooloop",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Product Defects",
+            "published_at_utc": "2026-05-05T07:00:00+00:00",
+            "extracted_age_hours": 2693.65
+        },
+        "ml_features_extracted": {
+            "severity": 70.0,
+            "urgency": 0.365456524606438,
+            "volume": 50.0,
+            "confidence_score": 36.66,
+            "opportunity_score": 43.0,
+            "article_age": 2693.653507478611,
+            "vulnerability_type": "Product Defects"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.4011,
+                "channel_confidence": 0.4801,
+                "content_type_confidence": 0.322
+            },
+            "overall_confidence": 0.4011
+        }
+    },
+    {
+        "article_metadata": {
+            "article_id": "7d78cc12-43b9-488b-a107-55dd6d237430",
+            "title": "Thanx Integrates Loyalty Platform With Square POS System - PYMNTS.com",
+            "source": "google_news_pos",
+            "competitors": [],
+            "vulnerability_type": "Price Increases",
+            "published_at_utc": "2025-03-31T07:00:00+00:00",
+            "extracted_age_hours": 12293.65
+        },
+        "ml_features_extracted": {
+            "severity": 80.0,
+            "urgency": 7.532619997738982e-10,
+            "volume": 50.0,
+            "confidence_score": 32.32,
+            "opportunity_score": 54.5,
+            "article_age": 12293.653532816388,
+            "vulnerability_type": "Price Increases"
+        },
+        "campaign_decision": {
+            "strategy": "PRODUCT_AWARENESS",
+            "channel": "SOCIAL_ONLY",
+            "content_type": "CASE_STUDY",
+            "confidence_metrics": {
+                "strategy_confidence": 0.2971,
+                "channel_confidence": 0.5384,
+                "content_type_confidence": 0.2664
+            },
+            "overall_confidence": 0.3673
+        }
+    }
+]
