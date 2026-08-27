@@ -7,15 +7,15 @@
             "competitors": [],
             "vulnerability_type": "Data Breaches",
             "published_at_utc": "2026-05-19T15:02:30+00:00",
-            "extracted_age_hours": 2349.61
+            "extracted_age_hours": 2395.37
         },
         "ml_features_extracted": {
             "severity": 90.0,
-            "urgency": 0.7483731318142013,
+            "urgency": 0.6803202203845726,
             "volume": 50.0,
             "confidence_score": 33.33,
             "opportunity_score": 58.5,
-            "article_age": 2349.6114105844445,
+            "article_age": 2395.3736953508333,
             "vulnerability_type": "Data Breaches"
         },
         "campaign_decision": {
@@ -38,15 +38,15 @@
             "competitors": [],
             "vulnerability_type": "Layoffs",
             "published_at_utc": "2026-03-19T07:00:00+00:00",
-            "extracted_age_hours": 3821.65
+            "extracted_age_hours": 3867.42
         },
         "ml_features_extracted": {
             "severity": 65.0,
-            "urgency": 0.03485331109183214,
+            "urgency": 0.03168394290103227,
             "volume": 50.0,
             "confidence_score": 75.4,
             "opportunity_score": 48.5,
-            "article_age": 3821.653114784722,
+            "article_age": 3867.415413844167,
             "vulnerability_type": "Layoffs"
         },
         "campaign_decision": {
@@ -69,15 +69,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2026-01-09T08:00:00+00:00",
-            "extracted_age_hours": 5476.65
+            "extracted_age_hours": 5522.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 0.001108747973205427,
+            "urgency": 0.0010079245304591524,
             "volume": 50.0,
             "confidence_score": 45.07,
             "opportunity_score": 43.0,
-            "article_age": 5476.653138398334,
+            "article_age": 5522.41544097611,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -100,15 +100,15 @@
             "competitors": [],
             "vulnerability_type": "System Outages",
             "published_at_utc": "2023-10-10T22:29:25+00:00",
-            "extracted_age_hours": 25190.16
+            "extracted_age_hours": 25235.93
         },
         "ml_features_extracted": {
             "severity": 95.0,
-            "urgency": 1.6159954401289888e-21,
+            "urgency": 1.4690456785238846e-21,
             "volume": 100.0,
             "confidence_score": 19.58,
             "opportunity_score": 68.0,
-            "article_age": 25190.16288022583,
+            "article_age": 25235.925190644448,
             "vulnerability_type": "System Outages"
         },
         "campaign_decision": {
@@ -131,15 +131,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2022-09-09T17:00:45+00:00",
-            "extracted_age_hours": 34699.64
+            "extracted_age_hours": 34745.4
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 4.022102872747799e-30,
+            "urgency": 3.656354938619167e-30,
             "volume": 100.0,
             "confidence_score": 30.68,
             "opportunity_score": 58.0,
-            "article_age": 34699.64069149222,
+            "article_age": 34745.402996669996,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -162,15 +162,15 @@
             "competitors": [],
             "vulnerability_type": "Price Increases",
             "published_at_utc": "2026-04-07T07:00:00+00:00",
-            "extracted_age_hours": 3365.65
+            "extracted_age_hours": 3411.42
         },
         "ml_features_extracted": {
             "severity": 80.0,
-            "urgency": 0.09012052213947194,
+            "urgency": 0.08192545817233782,
             "volume": 50.0,
             "confidence_score": 25.64,
             "opportunity_score": 47.0,
-            "article_age": 3365.6532266872223,
+            "article_age": 3411.415525352778,
             "vulnerability_type": "Price Increases"
         },
         "campaign_decision": {
@@ -193,15 +193,15 @@
             "competitors": [],
             "vulnerability_type": "Price Increases",
             "published_at_utc": "2026-04-07T07:00:00+00:00",
-            "extracted_age_hours": 3365.65
+            "extracted_age_hours": 3411.42
         },
         "ml_features_extracted": {
             "severity": 80.0,
-            "urgency": 0.0901205185882645,
+            "urgency": 0.08192545283310226,
             "volume": 50.0,
             "confidence_score": 68.73,
             "opportunity_score": 47.0,
-            "article_age": 3365.6532456016666,
+            "article_age": 3411.415556635278,
             "vulnerability_type": "Price Increases"
         },
         "campaign_decision": {
@@ -224,15 +224,15 @@
             "competitors": [],
             "vulnerability_type": "Price Increases",
             "published_at_utc": "2026-06-24T07:00:00+00:00",
-            "extracted_age_hours": 1493.65
+            "extracted_age_hours": 1539.42
         },
         "ml_features_extracted": {
             "severity": 80.0,
-            "urgency": 4.452174151020548,
+            "urgency": 4.047317820803524,
             "volume": 50.0,
             "confidence_score": 24.25,
             "opportunity_score": 54.5,
-            "article_age": 1493.6532652127778,
+            "article_age": 1539.4155795519443,
             "vulnerability_type": "Price Increases"
         },
         "campaign_decision": {
@@ -255,15 +255,15 @@
             "competitors": [],
             "vulnerability_type": "Price Increases",
             "published_at_utc": "2026-02-25T08:00:00+00:00",
-            "extracted_age_hours": 4348.65
+            "extracted_age_hours": 4394.42
         },
         "ml_features_extracted": {
             "severity": 80.0,
-            "urgency": 0.0116258506358247,
+            "urgency": 0.010568659314250245,
             "volume": 50.0,
             "confidence_score": 29.4,
             "opportunity_score": 47.0,
-            "article_age": 4348.653284735833,
+            "article_age": 4394.415605711111,
             "vulnerability_type": "Price Increases"
         },
         "campaign_decision": {
@@ -286,15 +286,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2026-02-25T08:00:00+00:00",
-            "extracted_age_hours": 4348.65
+            "extracted_age_hours": 4394.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 0.011625850204221735,
+            "urgency": 0.01056865883382275,
             "volume": 50.0,
             "confidence_score": 25.08,
             "opportunity_score": 43.0,
-            "article_age": 4348.6533025555555,
+            "article_age": 4394.415627530833,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -317,15 +317,15 @@
             "competitors": [],
             "vulnerability_type": "Data Breaches",
             "published_at_utc": "2025-04-24T07:00:00+00:00",
-            "extracted_age_hours": 11717.65
+            "extracted_age_hours": 11763.42
         },
         "ml_features_extracted": {
             "severity": 90.0,
-            "urgency": 2.5009190064850077e-09,
+            "urgency": 2.2734990549635024e-09,
             "volume": 50.0,
             "confidence_score": 34.09,
             "opportunity_score": 66.0,
-            "article_age": 11717.6533228875,
+            "article_age": 11763.415653276666,
             "vulnerability_type": "Data Breaches"
         },
         "campaign_decision": {
@@ -348,15 +348,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2025-04-24T07:00:00+00:00",
-            "extracted_age_hours": 11717.65
+            "extracted_age_hours": 11763.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 2.500918902660687e-09,
+            "urgency": 2.273498916416903e-09,
             "volume": 50.0,
             "confidence_score": 26.23,
             "opportunity_score": 50.5,
-            "article_age": 11717.653342814443,
+            "article_age": 11763.415682527777,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -379,15 +379,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2025-05-13T07:00:00+00:00",
-            "extracted_age_hours": 11261.65
+            "extracted_age_hours": 11307.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 6.466649920778224e-09,
+            "urgency": 5.878607837193544e-09,
             "volume": 50.0,
             "confidence_score": 22.61,
             "opportunity_score": 50.5,
-            "article_age": 11261.65336085139,
+            "article_age": 11307.415704690555,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -410,15 +410,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2025-02-14T08:00:00+00:00",
-            "extracted_age_hours": 13372.65
+            "extracted_age_hours": 13418.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 7.955883088449806e-11,
+            "urgency": 7.232418103078608e-11,
             "volume": 50.0,
             "confidence_score": 26.09,
             "opportunity_score": 50.5,
-            "article_age": 13372.653380545833,
+            "article_age": 13418.4157317975,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -441,15 +441,15 @@
             "competitors": [],
             "vulnerability_type": "Layoffs",
             "published_at_utc": "2025-05-13T07:00:00+00:00",
-            "extracted_age_hours": 11261.65
+            "extracted_age_hours": 11307.42
         },
         "ml_features_extracted": {
             "severity": 65.0,
-            "urgency": 6.4666493931811945e-09,
+            "urgency": 5.8786071049769015e-09,
             "volume": 50.0,
             "confidence_score": 22.85,
             "opportunity_score": 56.0,
-            "article_age": 11261.653400013332,
+            "article_age": 11307.415764477499,
             "vulnerability_type": "Layoffs"
         },
         "campaign_decision": {
@@ -472,15 +472,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2025-12-24T08:00:00+00:00",
-            "extracted_age_hours": 5860.65
+            "extracted_age_hours": 5906.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 0.0004981922772436271,
+            "urgency": 0.00045288935073033566,
             "volume": 50.0,
             "confidence_score": 35.31,
             "opportunity_score": 43.0,
-            "article_age": 5860.653428429722,
+            "article_age": 5906.415795445833,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -503,15 +503,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2025-05-14T07:00:00+00:00",
-            "extracted_age_hours": 11237.65
+            "extracted_age_hours": 11283.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 6.798200885113114e-09,
+            "urgency": 6.180008982551936e-09,
             "volume": 50.0,
             "confidence_score": 20.89,
             "opportunity_score": 50.5,
-            "article_age": 11237.653450309166,
+            "article_age": 11283.415823029723,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -534,15 +534,15 @@
             "competitors": [],
             "vulnerability_type": "System Outages",
             "published_at_utc": "2025-05-13T07:00:00+00:00",
-            "extracted_age_hours": 11261.65
+            "extracted_age_hours": 11307.42
         },
         "ml_features_extracted": {
             "severity": 95.0,
-            "urgency": 6.466648472158993e-09,
+            "urgency": 5.8786060551183085e-09,
             "volume": 50.0,
             "confidence_score": 32.15,
             "opportunity_score": 68.0,
-            "article_age": 11261.653468378056,
+            "article_age": 11307.415850200556,
             "vulnerability_type": "System Outages"
         },
         "campaign_decision": {
@@ -565,15 +565,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2025-05-13T07:00:00+00:00",
-            "extracted_age_hours": 11261.65
+            "extracted_age_hours": 11307.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 6.466648215715947e-09,
+            "urgency": 5.878605762814138e-09,
             "volume": 50.0,
             "confidence_score": 22.33,
             "opportunity_score": 58.0,
-            "article_age": 11261.653487413056,
+            "article_age": 11307.41587406778,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -596,15 +596,15 @@
             "competitors": [],
             "vulnerability_type": "Product Defects",
             "published_at_utc": "2026-05-05T07:00:00+00:00",
-            "extracted_age_hours": 2693.65
+            "extracted_age_hours": 2739.42
         },
         "ml_features_extracted": {
             "severity": 70.0,
-            "urgency": 0.365456524606438,
+            "urgency": 0.33222385405770494,
             "volume": 50.0,
             "confidence_score": 36.66,
             "opportunity_score": 43.0,
-            "article_age": 2693.653507478611,
+            "article_age": 2739.4159027461114,
             "vulnerability_type": "Product Defects"
         },
         "campaign_decision": {
@@ -627,15 +627,15 @@
             "competitors": [],
             "vulnerability_type": "Price Increases",
             "published_at_utc": "2025-03-31T07:00:00+00:00",
-            "extracted_age_hours": 12293.65
+            "extracted_age_hours": 12339.42
         },
         "ml_features_extracted": {
             "severity": 80.0,
-            "urgency": 7.532619997738982e-10,
+            "urgency": 6.847643649802303e-10,
             "volume": 50.0,
             "confidence_score": 32.32,
             "opportunity_score": 54.5,
-            "article_age": 12293.653532816388,
+            "article_age": 12339.415927470276,
             "vulnerability_type": "Price Increases"
         },
         "campaign_decision": {

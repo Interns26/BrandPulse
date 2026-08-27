@@ -1,9 +1,18 @@
+"""
+Module: generate_synthetic.py
+Purpose: Generates synthetic training data for the Sprint 3 ML model.
+Mechanism: Uses "Weak Supervision". Since historical campaign data does not exist, 
+this script applies hardcoded business rules (if/else logic) to randomized vulnerability 
+metrics to create 1,000 ground-truth examples for the ML model to study and memorize.
+"""
+
 import numpy as np
 import pandas as pd
 import random
 import os
 
 def generate_synthetic_dataset(num_samples: int = 1000, output_path: str = "synthetic_campaigns.csv"):
+    # Fix seeds for reproducibility. Ensures the same "random" data is generated every time.
     np.random.seed(42)
     random.seed(42)
 
@@ -16,6 +25,7 @@ def generate_synthetic_dataset(num_samples: int = 1000, output_path: str = "synt
         "Layoffs"
     ]
     
+    # Volumes represent source tiers (50 = Standard, 75 = Tier 2, 100 = Tier 1)
     volumes = [50.0, 75.0, 100.0]
 
     data = []
@@ -23,7 +33,7 @@ def generate_synthetic_dataset(num_samples: int = 1000, output_path: str = "synt
     for _ in range(num_samples):
         v_type = random.choice(vulnerability_types)
         
-        # Base severity derived from domain mapping with noise
+        # Base severity mapping. Establishes the mean for the normal distribution below.
         base_severities = {
             "System Outage": 95.0,
             "Data Breach": 90.0,
@@ -32,17 +42,29 @@ def generate_synthetic_dataset(num_samples: int = 1000, output_path: str = "synt
             "Product Defect": 70.0,
             "Layoffs": 65.0
         }
+        
+        # Inject statistical variance. A Data Breach won't always be exactly 90.0.
+        # np.clip keeps the resulting number between 0 and 100.
         severity = float(np.clip(np.random.normal(base_severities[v_type], 5.0), 0.0, 100.0))
         
-        article_age = float(np.random.exponential(scale=48.0)) # Decay distribution
+        # Simulate article age using an exponential distribution (most news is recent, some is old).
+        article_age = float(np.random.exponential(scale=48.0)) 
+        
+        # Calculate urgency using exponential time-decay. Older articles approach 0 urgency.
         urgency = float(100.0 * np.exp(-0.05 * (article_age / 24.0)))
+        
         volume = float(random.choice(volumes))
+        
+        # Simulate the Sprint 2 NLP model's confidence score (averaging 85%).
         confidence_score = float(np.clip(np.random.normal(0.85, 0.08), 0.5, 1.0))
         
-        # Opportunity Score calculation (Sprint 2 formula + slight noise)
+        # Reconstruct the Sprint 2 Opportunity Score formula with slight noise injected.
         opportunity_score = float(np.clip((0.40 * severity) + (0.30 * volume) + (0.30 * urgency) + np.random.normal(0, 2.0), 0.0, 100.0))
 
-        # Heuristic rules for targets
+        # ==========================================
+        # HEURISTIC RULES: THE GROUND TRUTH LOGIC
+        # ==========================================
+        # These rules map the raw numbers to the desired marketing actions.
         if v_type in ["System Outage", "Data Breach"] and severity > 80:
             strategy = "COMPETITOR_SWITCHING"
             channel = "LINKEDIN_EMAIL"
@@ -64,7 +86,12 @@ def generate_synthetic_dataset(num_samples: int = 1000, output_path: str = "synt
             channel = "SOCIAL_ONLY"
             content_type = "SOCIAL_CAMPAIGN"
 
-        # 15% Noise Injection to prevent rigid over-fitting
+        # ==========================================
+        # NOISE INJECTION
+        # ==========================================
+        # Scramble 15% of the target variables intentionally.
+        # This prevents the Random Forest model from memorizing the strict if/else rules,
+        # forcing it to learn generalized probability boundaries instead.
         if random.random() < 0.15:
             strategy = random.choice(["COMPETITOR_SWITCHING", "RETENTION_DEFENSE", "PROMOTIONAL_OFFER", "RELIABILITY_MESSAGING", "PRODUCT_AWARENESS"])
         if random.random() < 0.15:
