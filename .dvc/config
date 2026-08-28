@@ -1,4 +1,0 @@
-[core]
-    remote = model-storage
-['remote "model-storage"']
-    url = gdrive://https://drive.google.com/drive/folders/1Lh2DY2qFDF02dS6oUeMXP5QbhX4BnYo0?usp=drive_link
